@@ -1,11 +1,7 @@
 import re
-import os
-import codecs
-import pathlib
 from os import path
 from io import open
-from setuptools import setup, find_packages
-from pkg_resources import parse_requirements
+from setuptools import setup, find_namespace_packages
 
 
 def read_requirements(path):
@@ -35,24 +31,17 @@ with open(path.join(here, "README.md"), encoding="utf-8") as f:
     long_description = f.read()
 
 # loading version from setup.py
-# TODO: Change the template folder to the name of the package
-with codecs.open(
-    os.path.join(here, "template/__init__.py"), encoding="utf-8"
-) as init_file:
-    version_match = re.search(
-        r"^__version__ = ['\"]([^'\"]*)['\"]", init_file.read(), re.M
-    )
-    version_string = version_match.group(1) # type: ignore
-
+with open(path.join(here, 'VERSION'), encoding='utf-8') as f:
+    __version__ = f.read().strip()
 setup(
     name="hip_subnet",
-    version=version_string,
+    version=__version__,
     description="Human in the middle subnet for bittensor",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/HIP-Labs/bittensor-hip-subnet",
     author="Hamza Tariq",
-    packages=find_packages(),
+    packages=find_namespace_packages(),
     include_package_data=True,
     author_email="hamzatrq116@gmail.com",
     license="MIT",
