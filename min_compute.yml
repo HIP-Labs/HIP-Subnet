@@ -1,0 +1,63 @@
+version: "0.1.0"
+
+compute_spec:
+  miner:
+    cpu:
+      min_cores: 2 # Minimum number of CPU cores required for real-time processing and event handling
+      min_speed: 1.5 # Minimum speed per core in GHz, suitable for socket communication and web app serving
+      recommended_cores: 4 # Recommended number of CPU cores for handling multiple connections and smoother multitasking
+      recommended_speed: 2.0 # Recommended speed per core in GHz for optimal performance in processing and responsiveness
+      architecture: "x86_64" # CPU architecture type, x86_64 is standard for compatibility with most software
+
+    gpu:
+      required: False # Indicates that a GPU is not required as the tasks do not involve graphics processing or AI computations
+
+    memory:
+      min_ram: 4 # Minimum RAM required in GB, adequate for running a web server and managing socket connections
+      min_swap: 2 # Minimum swap space in GB, useful for handling overflow memory usage from RAM
+      recommended_swap: 4 # Recommended swap space in GB, provides additional buffer for peak load scenarios
+      ram_type: "DDR4" # Type of RAM, DDR4 is recommended for its speed and efficiency
+
+    storage:
+      min_space: 10 # Minimum storage space in GB required for logs, temporary files, and app data
+      recommended_space: 50 # Recommended storage space in GB, allowing for extensive data storage and management
+      type: "SSD" # Preferred storage type, SSD is recommended for faster data access and improved performance
+      min_iops: 500 # Minimum Input/Output operations per second, suitable for less demanding applications
+      recommended_iops: 1000 # Recommended I/O operations per second for enhanced data processing capabilities
+
+    os:
+      name: "Ubuntu" # Preferred operating system, Ubuntu is chosen for its widespread support and reliability
+      version: 22.04 # Operating system version, specifying 22.04 for its latest features and security updates
+
+  validator:
+    cpu:
+      min_cores: 2 # Minimum CPU cores needed for efficient validation and comparison of answers
+      min_speed: 1.5 # Minimum speed per core in GHz, adequate for straightforward validation tasks
+      recommended_cores: 4 # Recommended CPU cores to manage peak validation periods and multitask effectively
+      recommended_speed: 2.0 # Recommended speed per core in GHz for improved performance during complex validations
+      architecture: "x86_64" # CPU architecture, x86_64 ensures compatibility across most validation tools
+
+    gpu:
+      required: False # A GPU is not required as the validator's tasks are not graphically intensive
+
+    memory:
+      min_ram: 4 # Minimum RAM in GB required for validation operations
+      min_swap: 2 # Minimum swap space in GB, helps in managing memory efficiently during validation processes
+      recommended_swap: 4 # Recommended swap space in GB, providing a cushion for high-demand periods
+      ram_type: "DDR4" # RAM type, DDR4 is chosen for its performance benefits
+
+    storage:
+      min_space: 10 # Minimum free storage space in GB for storing validation logs and data
+      recommended_space: 50 # Recommended storage space in GB for handling a larger volume of validation data over time
+      type: "SSD" # Storage type, SSD is preferred for its quick access times and reliability
+      min_iops: 500 # Minimum I/O operations per second, adjusted to the validation's moderate demand
+      recommended_iops: 1000 # Recommended I/O operations per second for optimal data processing during validations
+
+    os:
+      name: "Ubuntu" # Ubuntu is selected for its stability and support in server environments
+      version: 22.04 # Version of the operating system, 22.04 provides the latest updates and features
+
+network_spec:
+  bandwidth:
+    download: 50 # Minimum download bandwidth in Mbps for handling images and text based prompts
+    upload: 20 # Minimum upload bandwidth in Mbps for sharing text based answers
