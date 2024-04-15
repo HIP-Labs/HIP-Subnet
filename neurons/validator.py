@@ -44,18 +44,15 @@ class Validator(BaseValidatorNeuron):
         bt.logging.info("load_state()")
         self.load_state()
 
-        # TODO(developer): Anything specific to your use case you can do here
-
     async def forward(self):
         """
         Validator forward pass. Consists of:
-        - Generating the query
-        - Querying the miners
-        - Getting the responses
-        - Rewarding the miners
+        - Fetch the task
+        - Send the task to the miners
+        - Get the responses
+        - Reward the miners
         - Updating the scores
         """
-        # TODO(developer): Rewrite this function based on your protocol definition.
         return await forward(self)
 
 
