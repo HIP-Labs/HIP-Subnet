@@ -153,6 +153,12 @@ class BaseNeuron(ABC):
         if self.config.neuron.disable_set_weights:
             return False
 
+        # If neuron has validator permit we assume its running the validator code. If it is a dual permit neuron then we check that it also has a set_weights method (only true if it is running validator neuron)
+        if not self.metagraph.validator_permit[self.uid] or not hasattr(
+            self, "set_weights"
+        ):
+            return False
+
         # Define appropriate logic for when set weights.
         return (
             self.block - self.metagraph.last_update[self.uid]

@@ -21,11 +21,12 @@ import asyncio
 import threading
 import argparse
 import traceback
-
 import bittensor as bt
 
+from hip.protocol import TaskSynapse
 from hip.base.neuron import BaseNeuron
 from hip.utils.config import add_miner_args
+from traceback import print_exception
 
 
 class BaseMinerNeuron(BaseNeuron):
@@ -54,21 +55,21 @@ class BaseMinerNeuron(BaseNeuron):
             )
 
         # The axon handles request processing, allowing validators to send this miner requests.
-        self.axon = bt.axon(wallet=self.wallet, config=self.config)
+        self.axon = bt.axon(wallet=self.wallet, config=self.config)  # type: ignore
 
         # Attach determiners which functions are called when servicing a request.
         bt.logging.info(f"Attaching forward function to miner axon.")
         self.axon.attach(
             forward_fn=self.forward,
-            blacklist_fn=self.blacklist,
-            priority_fn=self.priority,
+            blacklist_fn=self.blacklist,  # type: ignore
+            priority_fn=self.priority,  # type: ignore
         )
         bt.logging.info(f"Axon created: {self.axon}")
 
         # Instantiate runners
         self.should_exit: bool = False
         self.is_running: bool = False
-        self.thread: threading.Thread = None
+        self.thread: threading.Thread = None  # type: ignore
         self.lock = asyncio.Lock()
 
     def run(self):
@@ -136,6 +137,8 @@ class BaseMinerNeuron(BaseNeuron):
         # In case of unforeseen errors, the miner will log the error and continue operations.
         except Exception as e:
             bt.logging.error(traceback.format_exc())
+            bt.logging.debug(print_exception(type(err), err, err.__traceback__))  # type: ignore
+            self.should_exit = True
 
     def run_in_background_thread(self):
         """
