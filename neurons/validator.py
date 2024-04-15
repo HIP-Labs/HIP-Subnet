@@ -1,7 +1,6 @@
 # The MIT License (MIT)
 # Copyright © 2023 Yuma Rao
-# TODO(developer): Set your name
-# Copyright © 2023 <your name>
+# Copyright © 2024 HIP Labs
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
 # documentation files (the “Software”), to deal in the Software without restriction, including without limitation
@@ -24,7 +23,6 @@ import time
 import bittensor as bt
 
 # Bittensor Validator Template:
-import hip
 from hip.validator import forward
 
 # import base validator class which takes care of most of the boilerplate
@@ -65,5 +63,5 @@ class Validator(BaseValidatorNeuron):
 if __name__ == "__main__":
     with Validator() as validator:
         while True:
-            bt.logging.info("Validator running...", time.time())
+            bt.logging.info(f"Validator running... {time.time()}")
             time.sleep(5)
