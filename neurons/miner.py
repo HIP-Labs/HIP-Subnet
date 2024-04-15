@@ -40,9 +40,11 @@ class Miner(BaseMinerNeuron):
     def __init__(self, config=None):
         super(Miner, self).__init__(config=config)
 
-        # TODO(developer): Anything specific to your use case you can do here
+        # TODO:(developer): Anything specific to your use case you can do here
 
-    async def forward(self, synapse: hip.protocol.Dummy) -> hip.protocol.Dummy:
+    async def forward(
+        self, synapse: hip.protocol.TaskSynapse
+    ) -> hip.protocol.TaskSynapse:
         """
         Processes the incoming 'Dummy' synapse by performing a predefined operation on the input data.
         This method should be replaced with actual logic relevant to the miner's purpose.
@@ -57,10 +59,12 @@ class Miner(BaseMinerNeuron):
         the miner's intended operation. This method demonstrates a basic transformation of input data.
         """
         # TODO(developer): Replace with actual implementation logic.
-        synapse.dummy_output = synapse.dummy_input * 2
+        synapse.answer = "My answer"
         return synapse
 
-    async def blacklist(self, synapse: hip.protocol.Dummy) -> typing.Tuple[bool, str]:
+    async def blacklist(
+        self, synapse: hip.protocol.TaskSynapse
+    ) -> typing.Tuple[bool, str]:
         """
         Determines whether an incoming request should be blacklisted and thus ignored. Your implementation should
         define the logic for blacklisting requests based on your needs and desired security parameters.
@@ -115,7 +119,7 @@ class Miner(BaseMinerNeuron):
         )
         return False, "Hotkey recognized!"
 
-    async def priority(self, synapse: template.protocol.Dummy) -> float:
+    async def priority(self, synapse: hip.protocol.TaskSynapse) -> float:
         """
         The priority function determines the order in which requests are handled. More valuable or higher-priority
         requests are processed before others. You should design your own priority mechanism with care.

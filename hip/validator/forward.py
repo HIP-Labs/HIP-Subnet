@@ -19,7 +19,7 @@
 
 import bittensor as bt
 
-from hip.protocol import Dummy
+from hip.protocol import TaskSynapse
 from hip.validator.reward import get_rewards
 from hip.utils.uids import get_random_uids
 
@@ -32,7 +32,6 @@ async def forward(self):
 
     Args:
         self (:obj:`bittensor.neuron.Neuron`): The neuron object which contains all the necessary state for the validator.
-
     """
     # TODO(developer): Define how the validator selects a miner to query, how often, etc.
     # get_random_uids is an example method, but you can replace it with your own.
