@@ -21,7 +21,6 @@ import time
 import typing
 import bittensor as bt
 
-# Bittensor Miner Template:
 import hip
 
 # import base miner class which takes care of most of the boilerplate
@@ -46,22 +45,19 @@ class Miner(BaseMinerNeuron):
         self, synapse: hip.protocol.TaskSynapse
     ) -> hip.protocol.TaskSynapse:
         """
-        Processes the incoming 'Dummy' synapse by performing a predefined operation on the input data.
-        This method should be replaced with actual logic relevant to the miner's purpose.
+        Processes the incoming 'TaskSynapse' synapse by performing a predefined operation on the input data.
 
         Args:
-            synapse (template.protocol.Dummy): The synapse object containing the 'dummy_input' data.
+            synapse (template.protocol.TaskSynapse): The synapse object containing the task data.
 
         Returns:
-            template.protocol.Dummy: The synapse object with the 'dummy_output' field set to twice the 'dummy_input' value.
-
-        The 'forward' function is a placeholder and should be overridden with logic that is appropriate for
-        the miner's intended operation. This method demonstrates a basic transformation of input data.
+            template.protocol.TaskSynapse: The synapse object with the 'answer' field set to the answer from miner.
         """
-        # TODO(developer): Replace with actual implementation logic.
+        # TODO:(developer): Replace with actual implementation logic.
         synapse.answer = "My answer"
         return synapse
 
+    # TODO: Check if the blacklist function is correct
     async def blacklist(
         self, synapse: hip.protocol.TaskSynapse
     ) -> typing.Tuple[bool, str]:
@@ -74,7 +70,7 @@ class Miner(BaseMinerNeuron):
         requests before they are deserialized to avoid wasting resources on requests that will be ignored.
 
         Args:
-            synapse (template.protocol.Dummy): A synapse object constructed from the headers of the incoming request.
+            synapse (template.protocol.TaskSynapse): A synapse object constructed from the headers of the incoming request.
 
         Returns:
             Tuple[bool, str]: A tuple containing a boolean indicating whether the synapse's hotkey is blacklisted,
@@ -94,6 +90,17 @@ class Miner(BaseMinerNeuron):
 
         Otherwise, allow the request to be processed further.
         """
+        if not self.metagraph:
+            bt.logging.warning(
+                "Blacklist function called without metagraph. Blacklisting request."
+            )
+            return True, "No metagraph"
+        if not synapse.dendrite or not synapse.dendrite.hotkey:
+            bt.logging.warning(
+                "Blacklist function called without synapse. Blacklisting request."
+            )
+            return True, "No hotkey"
+
         # TODO(developer): Define how miners should blacklist requests.
         uid = self.metagraph.hotkeys.index(synapse.dendrite.hotkey)
         if (
@@ -119,6 +126,7 @@ class Miner(BaseMinerNeuron):
         )
         return False, "Hotkey recognized!"
 
+    # TODO: Check if the priority function is correct
     async def priority(self, synapse: hip.protocol.TaskSynapse) -> float:
         """
         The priority function determines the order in which requests are handled. More valuable or higher-priority
@@ -139,6 +147,18 @@ class Miner(BaseMinerNeuron):
         Example priority logic:
         - A higher stake results in a higher priority value.
         """
+        if not self.metagraph:
+            bt.logging.warning(
+                "Priority function called without metagraph. Returning default priority of 0."
+            )
+            return 0
+
+        if not synapse.dendrite or not synapse.dendrite.hotkey:
+            bt.logging.warning(
+                "Priority function called without synapse. Returning default priority of 0."
+            )
+            return 0
+
         # TODO(developer): Define how miners should prioritize requests.
         caller_uid = self.metagraph.hotkeys.index(
             synapse.dendrite.hotkey
@@ -147,7 +167,7 @@ class Miner(BaseMinerNeuron):
             self.metagraph.S[caller_uid]
         )  # Return the stake as the priority.
         bt.logging.trace(
-            f"Prioritizing {synapse.dendrite.hotkey} with value: ", prirority
+            f"Prioritizing {synapse.dendrite.hotkey} with value: {prirority}"
         )
         return prirority
 
@@ -156,5 +176,5 @@ class Miner(BaseMinerNeuron):
 if __name__ == "__main__":
     with Miner() as miner:
         while True:
-            bt.logging.info("Miner running...", time.time())
+            bt.logging.info(f"Miner running... {time.time()}")
             time.sleep(5)
