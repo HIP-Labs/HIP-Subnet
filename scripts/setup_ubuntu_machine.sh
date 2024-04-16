@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 # Ensure the script is run as root
 if [[ $EUID -ne 0 ]]; then
    echo "This script must be run as root" 
@@ -9,6 +8,7 @@ fi
 
 
 # Install Rust and Subtensor
+cd ~
 apt-get update
 apt install --assume-yes software-properties-common make build-essential git clang curl libssl-dev llvm libudev-dev protobuf-compiler tree jq
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
