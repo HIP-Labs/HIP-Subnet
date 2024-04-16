@@ -197,6 +197,20 @@ def add_validator_args(cls, parser):
     )
 
     parser.add_argument(
+        "--neuron.query_unique_coldkeys",
+        action="store_true",
+        help="Only query a single hotkey per coldkey.",
+        default=False,
+    )
+
+    parser.add_argument(
+        "--neuron.query_unique_ips",
+        action="store_true",
+        help="Only query a single hotkey per ip.",
+        default=False,
+    )
+
+    parser.add_argument(
         "--neuron.disable_set_weights",
         action="store_true",
         help="Disables setting weights.",
