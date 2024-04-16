@@ -40,7 +40,6 @@ def check_config(cls, config: "bt.Config"):  # type: ignore for config
     config.neuron.full_path = os.path.expanduser(full_path)
     if not os.path.exists(config.neuron.full_path):
         os.makedirs(config.neuron.full_path, exist_ok=True)
-
     if not config.neuron.dont_save_events:
         # Add custom event logger for the events.
         logger.level("EVENTS", no=38, icon="📝")
@@ -170,10 +169,17 @@ def add_validator_args(cls, parser):
     )
 
     parser.add_argument(
+        "--neuron.task_gen_step",
+        type=str,
+        help="Number of seconds between each task generation.",
+        default=10,
+    )
+
+    parser.add_argument(
         "--neuron.timeout",
         type=float,
         help="The timeout for each forward call in seconds.",
-        default=10,
+        default=60,
     )
 
     parser.add_argument(
@@ -201,7 +207,7 @@ def add_validator_args(cls, parser):
         "--neuron.moving_average_alpha",
         type=float,
         help="Moving average alpha parameter, how much to add of the new observation.",
-        default=0.1,
+        default=0.025,
     )
 
     parser.add_argument(

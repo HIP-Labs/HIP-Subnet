@@ -22,16 +22,20 @@ from typing import List
 from hip.protocol import TaskSynapse
 
 
-def reward(task: TaskSynapse, response: TaskSynapse) -> float:
-    """
-    Reward the miner response to the dummy request. This method returns a reward
-    value for the miner, which is used to update the miner's score.
+def find_answer_with_highest_count(data):
+    # Initialize variables to store the maximum count and corresponding string
+    max_count = -1
+    max_answer = None
 
-    Returns:
-    - float: The reward value for the miner.
-    """
+    # Iterate through the dictionary items
+    for answer, count in data.items():
+        # Check if the current count is greater than the max_count found so far
+        if count > max_count:
+            max_count = count
+            max_answer = answer
 
-    return 1.0 if response.answer == "My answer" else 0
+    # Return the string with the highest count
+    return max_answer
 
 
 def get_rewards(
@@ -49,7 +53,65 @@ def get_rewards(
     Returns:
     - torch.FloatTensor: A tensor of rewards for the given query and responses.
     """
+    scores: list[float] = [0.0] * len(responses)
+    timeout = self.config.neuron.timeout
+
+    for idx, response in enumerate(responses):
+        if not response.dendrite or response.dendrite.status_code != 200:
+            if response.dendrite and response.dendrite.status_code == 408:
+                scores[idx] = (
+                    0.1  # In case of timeout, give a small reward to keep the miner in the loop for future tasks
+                )
+                continue
+            else:
+                scores[idx] = 0
+        elif not response.answer:
+            scores[idx] = 0
+        elif task.type == "select":
+            if not response.answer in task.options:
+                scores[idx] = 0
+            elif response.dendrite.process_time == None:
+                scores[idx] = 0
+            elif response.dendrite.process_time >= timeout:  # type: ignore
+                scores[idx] = (
+                    0.1  # Give a small reward for a timeout (to keep the miner in the loop for future tasks
+                )
+            else:
+                # TODO(developer): Define how the validator scores responses.
+                scores[idx] = (
+                    1  # dummy score that will be replaced by the actual scoring logic
+                )
+        elif task.type == "input":
+            # check if the answer is of type string
+            if not isinstance(response.answer, str):
+                scores[idx] = 0
+            else:
+                scores[idx] = (
+                    1  # dummy score that will be replaced by the actual scoring logic
+                )
+
+    if task.type == "select":
+        answer_counts = {}
+        for idx, response in enumerate(responses):
+            if scores[idx] == 1:
+                if response.answer in answer_counts:
+                    answer_counts[response.answer] += 1
+                else:
+                    answer_counts[response.answer] = 1
+        # Get the answer with the most votes
+        chosen_answer = find_answer_with_highest_count(answer_counts)
+        if chosen_answer:
+            for idx, response in enumerate(responses):
+                if response.answer == chosen_answer:
+                    scores[idx] = 1
+                else:
+                    scores[idx] = 0.1
+        else:
+            for idx, response in enumerate(responses):
+                if scores[idx] == 1:
+                    scores[idx] = 0.1
+
     # Get all the reward results by iteratively calling your reward() function.
-    return torch.FloatTensor([reward(task, response) for response in responses]).to(  # type: ignore
+    return torch.FloatTensor(scores).to(  # type: ignore
         self.device
     )  # type: ignore

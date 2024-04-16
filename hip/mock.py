@@ -82,11 +82,11 @@ class MockDendrite(bt.dendrite):
                 # Attach some more required data so it looks real
                 s = self.preprocess_synapse_for_request(axon, s, timeout)
                 # We just want to mock the response, so we'll just fill in some data
-                process_time = random.random()
+                process_time = random.random() * (timeout + 6)
                 if process_time < timeout:
                     s.dendrite.process_time = str(time.time() - start_time)  # type: ignore
                     # Update the status code and status message of the dendrite to match the axon
-                    s.answer = "This is a mock answer"  # type: ignore
+                    s.answer = random.choice(["42", "43", "44"])
                     s.dendrite.status_code = 200  # type: ignore
                     s.dendrite.status_message = "OK"  # type: ignore
                     synapse.dendrite.process_time = str(process_time)  # type: ignore

@@ -43,7 +43,6 @@ class BaseMinerNeuron(BaseNeuron):
 
     def __init__(self, config=None):
         super().__init__(config=config)
-
         # Warn if allowing incoming requests from anyone.
         if not self.config.blacklist.force_validator_permit:
             bt.logging.warning(
@@ -56,7 +55,6 @@ class BaseMinerNeuron(BaseNeuron):
 
         # The axon handles request processing, allowing validators to send this miner requests.
         self.axon = bt.axon(wallet=self.wallet, config=self.config)  # type: ignore
-
         # Attach determiners which functions are called when servicing a request.
         bt.logging.info(f"Attaching forward function to miner axon.")
         self.axon.attach(
@@ -65,7 +63,6 @@ class BaseMinerNeuron(BaseNeuron):
             priority_fn=self.priority,  # type: ignore
         )
         bt.logging.info(f"Axon created: {self.axon}")
-
         # Instantiate runners
         self.should_exit: bool = False
         self.is_running: bool = False

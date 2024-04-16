@@ -168,3 +168,23 @@ class TaskSynapse(bt.Synapse):
         description="A list of fields that are required for the hash.",
         allow_mutation=False,
     )
+
+    def __str__(self) -> str:
+        """
+        Returns a string representation of the TaskSynapse object.
+
+        Returns:
+            str: A string representation of the TaskSynapse object.
+        """
+        return f"TaskSynapse(id={self.id}, label={self.label}, type={self.type}, options={self.options}, value={self.value}, image={self.image}, answer={self.answer})"
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "label": self.label,
+            "type": self.type,
+            "options": self.options,
+            "value": self.value,
+            "image": self.image,
+            "answer": self.answer,
+        }

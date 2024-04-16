@@ -24,26 +24,33 @@ from hip.validator.reward import get_rewards
 from hip.utils.uids import get_random_uids
 from hip.utils.hip_service import get_task
 
-# import time
+import time
 
 
 async def forward(self):
     """
-    The forward function is called by the validator every time step.
+    The forward function is called by the validator every time step. In our case it is called every 10 seconds.
 
     It is responsible for querying the network and scoring the responses.
 
     Args:
         self (:obj:`bittensor.neuron.Neuron`): The neuron object which contains all the necessary state for the validator.
     """
-    # Store the last run time
-    # if not hasattr(self, '_last_run_time'):
-    #     self._last_run_time = time.time()
+    firstTime = False
+    # task_gen_step is the wait time between creating and sending tasks.
+    task_gen_step = self.config.neuron.task_gen_step
 
-    # # Check if 10 seconds have passed
-    # if time.time() - self._last_run_time < 10:
-    #     return
-    # self._last_run_time = time.time()
+    # Store the last run time
+    if not hasattr(self, "_last_run_time"):
+        firstTime = True
+        self._last_run_time = time.time()
+
+    # Check if 10 seconds have passed
+    if time.time() - self._last_run_time < task_gen_step and not firstTime:
+        return
+    self._last_run_time = time.time()
+
+    print("Forwarding")
 
     miner_uids = get_random_uids(self, k=self.config.neuron.sample_size)
     task = await get_task()
@@ -56,14 +63,14 @@ async def forward(self):
         # You are encouraged to define your own deserialization function.
         deserialize=True,
     )
-
     # Log the results for monitoring purposes.
     bt.logging.info(f"Received responses: {responses}")
 
     # TODO(developer): Define how the validator scores responses.
     # Adjust the scores based on responses from miners.
     rewards = get_rewards(self, task=task, responses=responses)
-
+    for idx, response in enumerate(responses):
+        print(f"Response {idx}: Reward: {rewards[idx]} {response.answer}")
     bt.logging.info(f"Scored responses: {rewards}")
     # Update the scores based on the rewards. You may want to define your own update_scores function for custom behavior.
     self.update_scores(rewards, miner_uids)

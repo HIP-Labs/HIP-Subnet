@@ -38,7 +38,6 @@ class Miner(BaseMinerNeuron):
 
     def __init__(self, config=None):
         super(Miner, self).__init__(config=config)
-
         # TODO:(developer): Anything specific to your use case you can do here
 
     async def forward(
@@ -54,6 +53,8 @@ class Miner(BaseMinerNeuron):
             template.protocol.TaskSynapse: The synapse object with the 'answer' field set to the answer from miner.
         """
         # TODO:(developer): Replace with actual implementation logic.
+        print("Forwarding synapse")
+        print(synapse)
         synapse.answer = "My answer"
         return synapse
 
@@ -174,6 +175,7 @@ class Miner(BaseMinerNeuron):
 
 # This is the main function, which runs the miner.
 if __name__ == "__main__":
+    bt.logging.info("Starting miner...")
     with Miner() as miner:
         while True:
             bt.logging.info(f"Miner running... {time.time()}")
