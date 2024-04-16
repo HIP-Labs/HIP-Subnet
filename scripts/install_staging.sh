@@ -43,9 +43,9 @@ install_dependencies() {
 }
 
 # Call install_dependencies only if it's the first time running the script
-if [ ! -f ".dependencies_installed" ]; then
+if [ ! -f "~/.dependencies_installed" ]; then
     install_dependencies
-    touch .dependencies_installed
+    touch ~/.dependencies_installed
 fi
 
 
