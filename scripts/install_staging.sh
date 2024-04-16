@@ -59,7 +59,7 @@ wallet=${1:-owner}
 setup_environment() {
     # Clone subtensor and enter the directory
     if [ ! -d "subtensor" ]; then
-        git clone https://github.com/opentensor/subtensor.git
+        git clone https://github.com/opentensor/subtensor.git ~/subtensor
     fi
     cd subtensor
     git pull
@@ -67,7 +67,7 @@ setup_environment() {
     # Update to the nightly version of rust
     ./scripts/init.sh
 
-    cd ../HIP-Subnet
+    cd ~/HIP-Subnet
 
     # Install the HIP-Subnet python package
     python -m pip install -e .
@@ -89,15 +89,14 @@ setup_environment() {
 setup_environment 
 
 ## Setup localnet
-# assumes we are in the HIP-Subnet/ directory
 # Initialize your local subtensor chain in development mode. This command will set up and run a local subtensor network.
-cd ../subtensor
+cd ~/subtensor
 
 # Start a new tmux session and create a new pane, but do not switch to it
 echo "FEATURES='pow-faucet runtime-benchmarks' BT_DEFAULT_TOKEN_WALLET=$(cat ~/.bittensor/wallets/$wallet/coldkeypub.txt | grep -oP '"ss58Address": "\K[^"]+') bash scripts/localnet.sh" >> setup_and_run.sh
 chmod +x setup_and_run.sh
 tmux new-session -d -s localnet -n 'localnet'
-tmux send-keys -t localnet 'bash ../subtensor/setup_and_run.sh' C-m
+tmux send-keys -t localnet 'bash ~/subtensor/setup_and_run.sh' C-m
 
 # Notify the user
 echo ">> localnet.sh is running in a detached tmux session named 'localnet'"
@@ -125,7 +124,7 @@ btcli subnet list --subtensor.chain_endpoint ws://127.0.0.1:9946
 btcli wallet overview --wallet.name validator --subtensor.chain_endpoint ws://127.0.0.1:9946 --no_prompt
 btcli wallet overview --wallet.name miner --subtensor.chain_endpoint ws://127.0.0.1:9946 --no_prompt
 
-cd ../HIP-Subnet
+cd ~/HIP-Subnet
 
 
 # Check if inside a tmux session
