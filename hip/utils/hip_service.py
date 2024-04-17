@@ -3,7 +3,6 @@ from hip.protocol import TaskSynapse
 from hip.constants import HIP_SERVICE_URL
 
 
-# TODO: Call the HIP Service api to get the task
 async def get_task() -> TaskSynapse:
     # send a GET request to the HIP_SERVICE_URL and create a TaskSynapse object
     async with aiohttp.ClientSession() as session:
