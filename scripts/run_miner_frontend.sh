@@ -1,0 +1,1 @@
+uvicorn frontend:app --port 3001
