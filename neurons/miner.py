@@ -16,10 +16,11 @@
 # THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
-
+import os
 import time
 import typing
 import bittensor as bt
+from tinydb import TinyDB, where
 
 import hip
 
@@ -38,6 +39,15 @@ class Miner(BaseMinerNeuron):
 
     def __init__(self, config=None):
         super(Miner, self).__init__(config=config)
+        print("Miner init", os.path.dirname(__file__))
+        tasks_path = os.path.join(os.path.dirname(__file__), "../", "tasks_db.json")
+        self.tasks_db = TinyDB(tasks_path)
+        answers_path = os.path.join(os.path.dirname(__file__), "../", "answers_db.json")
+        self.answers_db = TinyDB(answers_path)
+        # Remove all the tasks and answers from the database
+        # Because the miner is starting fresh
+        self.tasks_db.truncate()
+        self.answers_db.truncate()
         # TODO:(developer): Anything specific to your use case you can do here
 
     async def forward(
@@ -52,10 +62,27 @@ class Miner(BaseMinerNeuron):
         Returns:
             template.protocol.TaskSynapse: The synapse object with the 'answer' field set to the answer from miner.
         """
-        # TODO:(developer): Replace with actual implementation logic.
+        # TODO:(developer): Confim if the logic is correct
         print("Forwarding synapse")
-        print(synapse)
-        synapse.answer = "My answer"
+        self.tasks_db.insert(synapse.dict())
+        start_time = time.time()
+        timeout = 3 * 60  # 3 minutes
+        answered = False
+        if synapse.timeout:
+            timeout = synapse.timeout
+        while time.time() - start_time < timeout:
+            if self.answers_db.search(where("id") == synapse.id):
+                answered = True
+                break
+            time.sleep(1)
+        if not answered:
+            synapse.answer = "No Answered"
+            self.tasks_db.remove(where("id") == synapse.id)
+            self.answers_db.remove(where("id") == synapse.id)
+            return synapse
+        answer = self.answers_db.search(where("id") == synapse.id)[0]
+        synapse.answer = answer["answer"]
+        self.answers_db.remove(where("id") == synapse.id)
         return synapse
 
     # TODO: Check if the blacklist function is correct

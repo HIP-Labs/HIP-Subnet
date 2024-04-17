@@ -160,3 +160,5 @@ cython_debug/
 #.idea/
 
 testing/
+tasks_db.json
+answers_db.json
