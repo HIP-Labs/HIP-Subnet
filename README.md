@@ -46,6 +46,8 @@ cd HIP-Subnet
 ```
 Once inside the HIP-Subnet directory, create the enviroment and Install the required dependencies with:
 ```
+sudo apt get update
+sudo apt install python3.10-venv
 python3 -m venv env 
 source env/bin/activate
 ```
