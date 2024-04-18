@@ -73,7 +73,7 @@ Mining can be run on any device within the local network once the miner script i
 
 Register your miner: 
 ```
-btcli register --wallet.name miner --wallet.hotkey miner --netuid <#TBD> --subtensor.network finney
+btcli register --wallet.name <YOUR_WALLET_COLDKEY> --wallet.hotkey <YOUR_WALLET_HOTKEY> --netuid <#TBD> --subtensor.network finney
 ```
 Run the miner: 
 ```
