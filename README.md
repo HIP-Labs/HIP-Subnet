@@ -45,13 +45,17 @@ To participate in the HIP Subnet as a miner or validator, follow these steps:
 
 Clone the HIP Subnet repository:
 ```
-git clone https://github.com/HIP-LABS/HIP-Subnet.git`
+git clone https://github.com/HIP-LABS/HIP-Subnet.git
 ```
 Enter the directory where the hip subnet was cloned:
 ```
 cd HIP-Subnet
 ```
-Once inside the HIP-Subnet directory, Install the required dependencies with:
+Once inside the HIP-Subnet directory, create the enviroment and Install the required dependencies with:
+```
+python3 -m venv env 
+source env/bin/activate
+```
 ```
 python3 -m pip install -r requirements.txt
 python3 -m pip install -e .
@@ -73,11 +77,11 @@ Mining can be run on any device within the local network once the miner script i
 
 Register your miner: 
 ```
-btcli register --wallet.name <YOUR_WALLET_COLDKEY> --wallet.hotkey <YOUR_WALLET_HOTKEY> --netuid <#TBD> --subtensor.network finney
+btcli register --wallet.name <YOUR_WALLET_COLDKEY> --wallet.hotkey <YOUR_WALLET_HOTKEY> --netuid 134 --subtensor.network test
 ```
 Run the miner: 
 ```
-python miner.py --netuid <#TBD> --subtensor.network finney --wallet.name <YOUR_WALLET_COLDKEY> --wallet.hotkey <YOUR_WALLET_HOTKEY>
+python3 neurons/miner.py --netuid 134 --subtensor.network test --wallet.name <YOUR_WALLET_COLDKEY> --wallet.hotkey <YOUR_WALLET_HOTKEY> --logging.debug
 ```
 To run the miner frontend script, follow these steps:
 
@@ -107,15 +111,15 @@ INFO:     Uvicorn running on http://localhost:3001 (Press CTRL+C to quit)
 
 Register your validator:
 ```
-btcli register --wallet.name <YOUR_WALLET_COLDKEY> --wallet.hotkey <YOUR_WALLET_HOTKEY> --netuid <#TBD> --subtensor.network finney
+btcli register --wallet.name <YOUR_WALLET_COLDKEY> --wallet.hotkey <YOUR_WALLET_HOTKEY> --netuid 134 --subtensor.network test
 ```
 Stake your validator:
 ```
-btcli stake --wallet.name <YOUR_WALLET_COLDKEY> --wallet.hotkey <YOUR_WALLET_HOTKEY> --amount 100 --netuid <#TBD> --subtensor.network finney
+btcli stake --wallet.name <YOUR_WALLET_COLDKEY> --wallet.hotkey <YOUR_WALLET_HOTKEY> --amount 100 --netuid 134 --subtensor.network test
 ```
 Run the validator:
 ```
-python validator.py --netuid <#TBD> --subtensor.network finney --wallet.name <YOUR_WALLET_COLDKEY> --wallet.hotkey <YOUR_WALLET_HOTKEY>
+python3 neurons/validator.py --netuid 134 --subtensor.network test --wallet.name <YOUR_WALLET_COLDKEY> --wallet.hotkey <YOUR_WALLET_HOTKEY> --logging.debug
 ```
 ---
 
