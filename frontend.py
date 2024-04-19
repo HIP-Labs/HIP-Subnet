@@ -24,7 +24,7 @@ def MockData():
 
 
 # Uncomment the line below to populate the database with mock data
-MockData()
+# MockData()
 
 
 class Answer(BaseModel):
