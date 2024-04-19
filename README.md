@@ -79,7 +79,7 @@ python3 neurons/miner.py --netuid 134 --subtensor.network test --wallet.name <YO
 To run the miner frontend script, follow these steps:
 
  - Open a terminal or command prompt.
- - Navigate to the directory where the run_miner_frontend.sh script is located. eg. `cd /path/to/HIP-Subnet`
+ - Navigate to the HIP-Subnet root directory.
  - Make sure the run_miner_frontend.sh script has execute permissions. If not, you can add execute permissions using the following command: `chmod +x run_miner_frontend.sh`
  - Run the script by executing the following command: `./run_miner_frontend.sh`
 
