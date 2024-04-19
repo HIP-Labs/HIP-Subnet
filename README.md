@@ -62,6 +62,7 @@ Now that the installation is complete it is now time to participate in the netwo
 ##### Mining
 
 Mining can be run on any device within the local network once the miner script is executed. However, there are a few considerations and steps to ensure that the miner can be accessed and utilized effectively across the local network:
+
  - Ensure that the device running the miner script is connected to the local network and has a stable network connection.
  - Configure the network settings to allow incoming connections to the miner's frontend web application port (port 3001 is the default).
  - If the local network has a firewall or security measures in place, make sure to open the necessary ports or create appropriate firewall rules to allow communication with the miner.
@@ -69,7 +70,7 @@ Mining can be run on any device within the local network once the miner script i
 
 Register your miner: 
 ```
-btcli register --wallet.name <YOUR_WALLET_COLDKEY> --wallet.hotkey <YOUR_WALLET_HOTKEY> --netuid 134 --subtensor.network test
+btcli subnet register --wallet.name <YOUR_WALLET_COLDKEY> --wallet.hotkey <YOUR_WALLET_HOTKEY> --netuid 134 --subtensor.network test
 ```
 Run the miner: 
 ```
@@ -78,11 +79,8 @@ python3 neurons/miner.py --netuid 134 --subtensor.network test --wallet.name <YO
 To run the miner frontend script, follow these steps:
 
  - Open a terminal or command prompt.
- 
  - Navigate to the directory where the run_miner_frontend.sh script is located. eg. `cd /path/to/HIP-Subnet`
-
  - Make sure the run_miner_frontend.sh script has execute permissions. If not, you can add execute permissions using the following command: `chmod +x run_miner_frontend.sh`
-
  - Run the script by executing the following command: `./run_miner_frontend.sh`
 
   The script will start the frontend server, and you should see output similar to the following:
@@ -94,20 +92,24 @@ INFO:     Application startup complete.
 INFO:     Uvicorn running on http://localhost:3001 (Press CTRL+C to quit)
 ```
  - This indicates that the miner's frontend is now running and accessible at http://localhost:3001.
- - You can now access the miner's frontend by opening a web browser and navigating to http://localhost:3001.
+ - You can now access the miner's frontend by opening a web browser and navigating to http://localhost:3001. 
  - To stop the miner's frontend, press CTRL+C in the terminal where the script is running.
 
+NOTE: Please ensure port 3001 is open:
+```
+ufw allow 3001
+```
 ---
 
 ##### Validating
 
 Register your validator:
 ```
-btcli register --wallet.name <YOUR_WALLET_COLDKEY> --wallet.hotkey <YOUR_WALLET_HOTKEY> --netuid 134 --subtensor.network test
+btcli subnet register --wallet.name <YOUR_WALLET_COLDKEY> --wallet.hotkey <YOUR_WALLET_HOTKEY> --netuid 134 --subtensor.network test
 ```
 Stake your validator:
 ```
-btcli stake --wallet.name <YOUR_WALLET_COLDKEY> --wallet.hotkey <YOUR_WALLET_HOTKEY> --amount 100 --netuid 134 --subtensor.network test
+btcli subnet stake --wallet.name <YOUR_WALLET_COLDKEY> --wallet.hotkey <YOUR_WALLET_HOTKEY> --amount 100 --netuid 134 --subtensor.network test
 ```
 Run the validator:
 ```
