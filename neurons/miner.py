@@ -64,7 +64,16 @@ class Miner(BaseMinerNeuron):
         """
         # TODO:(developer): Confim if the logic is correct
         print("Forwarding synapse")
-        self.tasks_db.insert(synapse.dict())
+        task = {
+            "id": synapse.id,
+            "label": synapse.label,
+            "type": synapse.type,
+            "options": synapse.options,
+            "value": synapse.value,
+            "image": synapse.image,
+            "answer": "",
+        }
+        self.tasks_db.insert(task)
         start_time = time.time()
         timeout = 3 * 60  # 3 minutes
         answered = False
