@@ -5,6 +5,7 @@ from pydantic import BaseModel, Field
 from tinydb import TinyDB, where
 import os
 import json
+from fastapi.middleware.cors import CORSMiddleware
 
 # define absolute paths to the databases
 tasks_path = os.path.join(os.path.dirname(__file__), "tasks_db.json")
@@ -13,6 +14,18 @@ answers_path = os.path.join(os.path.dirname(__file__), "answers_db.json")
 answers_db = TinyDB(answers_path)
 
 app = FastAPI()
+
+enable_cors = False
+
+if enable_cors:
+    # enable cors
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
 
 def MockData():
