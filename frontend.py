@@ -15,8 +15,7 @@ answers_db = TinyDB(answers_path)
 
 app = FastAPI()
 
-enable_cors = False
-
+enable_cors = os.environ.get("CORS")
 if enable_cors:
     # enable cors
     app.add_middleware(
