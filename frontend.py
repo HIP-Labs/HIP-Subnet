@@ -28,11 +28,12 @@ if enable_cors:
 
 
 def MockData():
+    answers_db.truncate()
+    tasks_db.truncate()
     my_dict = json.loads(
         """[ { "id": "e0d8f744-2483-4a48-b07f-7472c92806e9", "label": "What is the capital of France?", "type": "select", "options": [ "Paris", "Marseille", "Lyon", "Toulouse" ], "value": "France", "image": "https://upload.wikimedia.org/wikipedia/en/c/c3/Flag_of_France.svg", "answer": "" }, { "id": "e0d8f744-2483-4a48-b07f-7472c92806e0", "label": "What is the capital of Japan?", "type": "select", "options": [ "Tokyo", "Osaka", "Kyoto", "Yokohama" ], "value": "Japan", "image": "https://upload.wikimedia.org/wikipedia/en/9/9e/Flag_of_Japan.svg", "answer": "" } ]"""
     )
     tasks_db.insert_multiple(my_dict)
-    answers_db.truncate()
 
 
 # Uncomment the line below to populate the database with mock data

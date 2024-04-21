@@ -46,8 +46,8 @@ class Miner(BaseMinerNeuron):
         self.answers_db = TinyDB(answers_path)
         # Remove all the tasks and answers from the database
         # Because the miner is starting fresh
-        self.tasks_db.truncate()
-        self.answers_db.truncate()
+        # self.tasks_db.truncate()
+        # self.answers_db.truncate()
         # TODO:(developer): Anything specific to your use case you can do here
 
     async def forward(
