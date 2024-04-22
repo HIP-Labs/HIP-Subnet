@@ -82,7 +82,7 @@ To run the miner frontend script, follow these steps:
    ```
  - Run the script by executing the following command:
    ```
-   ./run_miner_frontend.sh
+   ./scripts/run_miner_frontend.sh
    ```
 
   The script will start the frontend server, and you should see output similar to the following:
