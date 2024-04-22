@@ -68,7 +68,7 @@ async def forward(self):
     # For each response print the response's id and the response's answer.
     for response in responses:
         print(
-            f"Response from {response.id}: {response.answer} Code: {response.status_code}"
+            f"Response from {response.id}: {response.answer} Code: {response.dendrite.status_code}"
         )
     # TODO(developer): Define how the validator scores responses.
     # Adjust the scores based on responses from miners.
