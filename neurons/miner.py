@@ -86,7 +86,7 @@ class Miner(BaseMinerNeuron):
                 break
             time.sleep(1)
         if not answered:
-            synapse.answer = "No Answered"
+            synapse.answer = "Not Answered"
             self.tasks_db.remove(where("id") == synapse.id)
             self.answers_db.remove(where("id") == synapse.id)
             return synapse
