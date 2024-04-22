@@ -50,10 +50,10 @@ async def forward(self):
         return
     self._last_run_time = time.time()
 
-    print("Forwarding")
-
     miner_uids = get_random_uids(self, k=self.config.neuron.sample_size)
     task = await get_task()
+    print(f"Forwarding Task: {task.id} to miners: {miner_uids}")
+
     # The dendrite client queries the network.
     responses = await self.dendrite(
         # Send the query to selected miner axons in the network.
@@ -65,7 +65,9 @@ async def forward(self):
     )
     # Log the results for monitoring purposes.
     bt.logging.info(f"Received responses: {responses}")
-
+    # For each response print the response's id and the response's answer.
+    for response in responses:
+        print(f"Response from {response.id}: {response.answer} Code: {response.reward}")
     # TODO(developer): Define how the validator scores responses.
     # Adjust the scores based on responses from miners.
     rewards = get_rewards(self, task=task, responses=responses)

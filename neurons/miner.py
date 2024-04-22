@@ -77,8 +77,9 @@ class Miner(BaseMinerNeuron):
         start_time = time.time()
         timeout = 3 * 60  # 3 minutes
         answered = False
-        if synapse.timeout:
-            timeout = synapse.timeout
+        # TODO: Commented out the timeout reconfigure it
+        # if synapse.timeout:
+        #     timeout = synapse.timeout
         while time.time() - start_time < timeout:
             if self.answers_db.search(where("id") == synapse.id):
                 answered = True
@@ -92,6 +93,7 @@ class Miner(BaseMinerNeuron):
         answer = self.answers_db.search(where("id") == synapse.id)[0]
         synapse.answer = answer["answer"]
         self.answers_db.remove(where("id") == synapse.id)
+        print(f"For the task: {synapse.id} the answer is: {synapse.answer}")
         return synapse
 
     # TODO: Check if the blacklist function is correct
