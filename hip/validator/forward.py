@@ -67,7 +67,9 @@ async def forward(self):
     bt.logging.info(f"Received responses: {responses}")
     # For each response print the response's id and the response's answer.
     for response in responses:
-        print(f"Response from {response.id}: {response.answer} Code: {response.reward}")
+        print(
+            f"Response from {response.id}: {response.answer} Code: {response.status_code}"
+        )
     # TODO(developer): Define how the validator scores responses.
     # Adjust the scores based on responses from miners.
     rewards = get_rewards(self, task=task, responses=responses)
