@@ -27,11 +27,7 @@ To participate in the HIP Subnet as a miner or validator, follow these steps:
 ##### Prerequisites
 
  - Python 3.8 or higher
-
- - Bittensor installed:
-```
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/opentensor/bittensor/master/scripts/install.sh)"
-```
+   
  - A Bittensor wallet with sufficient TAO for staking and registration
 
 ##### Installation
@@ -80,8 +76,14 @@ To run the miner frontend script, follow these steps:
 
  - Open a terminal or command prompt.
  - Navigate to the HIP-Subnet root directory.
- - Make sure the run_miner_frontend.sh script has execute permissions. If not, you can add execute permissions using the following command: `chmod +x run_miner_frontend.sh`
- - Run the script by executing the following command: `./run_miner_frontend.sh`
+ - Make sure the run_miner_frontend.sh script has execute permissions. If not, you can add execute permissions using the following command:
+   ```
+   chmod +x scripts/run_miner_frontend.sh
+   ```
+ - Run the script by executing the following command:
+   ```
+   ./run_miner_frontend.sh
+   ```
 
   The script will start the frontend server, and you should see output similar to the following:
 
@@ -97,7 +99,7 @@ INFO:     Uvicorn running on http://localhost:3001 (Press CTRL+C to quit)
 
 NOTE: Please ensure port 3001 is open:
 ```
-ufw allow 3001
+sudo ufw allow 3001
 ```
 ---
 
