@@ -164,3 +164,4 @@ tasks_db.json
 answers_db.json
 store_in_db.py
 info.txt
+.DS_Store
