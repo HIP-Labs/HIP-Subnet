@@ -63,7 +63,7 @@ class Miner(BaseMinerNeuron):
             template.protocol.TaskSynapse: The synapse object with the 'answer' field set to the answer from miner.
         """
         # TODO:(developer): Confim if the logic is correct
-        print("Forwarding synapse")
+        print("Forwarding synapse to frontend")
         task = {
             "id": synapse.id,
             "label": synapse.label,
@@ -74,9 +74,11 @@ class Miner(BaseMinerNeuron):
             "answer": "",
         }
         self.tasks_db.insert(task)
+        print(f"Task: {task['id']} inserted into the database")
         start_time = time.time()
         timeout = 3 * 60  # 3 minutes
         answered = False
+        print(f"Waiting for the task: {task['id']} to be answered")
         # TODO: Commented out the timeout reconfigure it
         # if synapse.timeout:
         #     timeout = synapse.timeout
@@ -86,15 +88,19 @@ class Miner(BaseMinerNeuron):
                 break
             time.sleep(1)
         if not answered:
+            print(f"Task: {task['id']} not answered within the timeout")
             synapse.answer = "Not Answered"
             self.tasks_db.remove(where("id") == synapse.id)
             self.answers_db.remove(where("id") == synapse.id)
+            print(f"For the task: {synapse.id} the answer is: {synapse.answer}")
             return synapse
-        answer = self.answers_db.search(where("id") == synapse.id)[0]
-        synapse.answer = answer["answer"]
-        self.answers_db.remove(where("id") == synapse.id)
-        print(f"For the task: {synapse.id} the answer is: {synapse.answer}")
-        return synapse
+        else:
+            print(f"Task: {task['id']} answered within the timeout")
+            answer = self.answers_db.search(where("id") == synapse.id)[0]
+            synapse.answer = answer["answer"]
+            self.answers_db.remove(where("id") == synapse.id)
+            print(f"For the task: {synapse.id} the answer is: {synapse.answer}")
+            return synapse
 
     # TODO: Check if the blacklist function is correct
     async def blacklist(
