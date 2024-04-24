@@ -79,6 +79,8 @@ class Miner(BaseMinerNeuron):
         timeout = 3 * 60  # 3 minutes
         answered = False
         print(f"Waiting for the task: {task['id']} to be answered")
+        print(f"Timeout for the task: {task['id']} is {synapse.timeout} seconds")
+        print(f"Configured timeout for the task: {task['id']} is {timeout} seconds")
         # TODO: Commented out the timeout reconfigure it
         # if synapse.timeout:
         #     timeout = synapse.timeout
