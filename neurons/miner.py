@@ -217,6 +217,7 @@ if __name__ == "__main__":
     updateAvailable = check_updates()
     if updateAvailable:
         bt.logging.info("Update available. Please update the miner.")
+        print("Update available. Please update the miner.")
         exit(1)
     with Miner() as miner:
         while True:

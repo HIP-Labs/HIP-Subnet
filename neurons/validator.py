@@ -61,7 +61,8 @@ class Validator(BaseValidatorNeuron):
 if __name__ == "__main__":
     updateAvailable = check_updates()
     if updateAvailable:
-        bt.logging.info("Update available. Please update the miner.")
+        bt.logging.info("Update available. Please update the validator.")
+        print("Update available. Please update the validator.")
         exit(1)
     with Validator() as validator:
         while True:
