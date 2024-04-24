@@ -42,7 +42,18 @@ Enter the directory where the hip subnet was cloned:
 ```
 cd HIP-Subnet
 ```
-Once inside the HIP-Subnet directory, create the enviroment and Install the required dependencies with:
+Once inside the HIP-Subnet directory, there are two ways to install the subnet. 
+
+The scripted installation can be activated with:
+
+```
+chmod +x scripts/hip_install.sh
+./scripts/hip_install.sh
+```
+
+Manual installation:
+
+create the enviroment and Install the required dependencies with:
 ```
 sudo apt get update
 sudo apt install python3.10-venv
