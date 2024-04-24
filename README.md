@@ -22,6 +22,8 @@
 
 ## Getting Started
 
+NOTE - Bittensor is currently supported on macOS and Linux with limited support for Windows.
+
 To participate in the HIP Subnet as a miner or validator, follow these steps:
 
 ##### Prerequisites
@@ -85,7 +87,7 @@ To run the miner frontend script, follow these steps:
    ./scripts/run_miner_frontend.sh
    ```
 
-  The script will start the frontend server, and you should see output similar to the following:
+  The script will ensure port 3001 is open and start the frontend server. You should see output similar to the following:
 
 ```
 INFO:     Started server process [PID]
@@ -97,10 +99,6 @@ INFO:     Uvicorn running on http://localhost:3001 (Press CTRL+C to quit)
  - You can now access the miner's frontend by opening a web browser and navigating to http://localhost:3001. 
  - To stop the miner's frontend, press CTRL+C in the terminal where the script is running.
 
-NOTE: Please ensure port 3001 is open:
-```
-sudo ufw allow 3001
-```
 ---
 
 ##### Validating
