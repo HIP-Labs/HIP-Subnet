@@ -18,6 +18,7 @@ app = FastAPI()
 enable_cors = os.environ.get("CORS")
 if enable_cors:
     # enable cors
+    print("Warning: CORS enabled for all origins")
     app.add_middleware(
         CORSMiddleware,
         allow_origins=["*"],
