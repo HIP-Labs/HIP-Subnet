@@ -60,6 +60,7 @@ class BaseNeuron(ABC):
         return ttl_get_block(self)
 
     def __init__(self, config=None):
+        print("BaseNeuron init")
         base_config = copy.deepcopy(config or BaseNeuron.config())
         self.config = self.config()  # type: ignore
         self.config.merge(base_config)
@@ -166,12 +167,14 @@ class BaseNeuron(ABC):
 
     # TODO: Implement this function
     def save_state(self):
-        bt.logging.warning(
-            "save_state() not implemented for this neuron. You can implement this function to save model checkpoints or other useful data."
-        )
+        return
+        # bt.logging.warning(
+        #     "save_state() not implemented for this neuron. You can implement this function to save model checkpoints or other useful data."
+        # )
 
     # TODO: Implement this function
     def load_state(self):
-        bt.logging.warning(
-            "load_state() not implemented for this neuron. You can implement this function to load model checkpoints or other useful data."
-        )
+        return
+        # bt.logging.warning(
+        #     "load_state() not implemented for this neuron. You can implement this function to load model checkpoints or other useful data."
+        # )
