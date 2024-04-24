@@ -27,6 +27,7 @@ from hip.validator import forward
 
 # import base validator class which takes care of most of the boilerplate
 from hip.base.validator import BaseValidatorNeuron
+from hip.version import check_updates
 
 
 class Validator(BaseValidatorNeuron):
@@ -58,6 +59,10 @@ class Validator(BaseValidatorNeuron):
 
 # The main function parses the configuration and runs the validator.
 if __name__ == "__main__":
+    updateAvailable = check_updates()
+    if updateAvailable:
+        bt.logging.info("Update available. Please update the miner.")
+        exit(1)
     with Validator() as validator:
         while True:
             bt.logging.info(f"Validator running... {time.time()}")

@@ -17,7 +17,7 @@ def generate_spec_version(version: str):
     )
 
 
-async def check_updates():
+async def check_updates() -> bool:
     url = "https://raw.githubusercontent.com/HIP-Labs/HIP-Subnet/main/VERSION"
     response = requests.get(url)
     latest_version = response.text.strip()
@@ -27,3 +27,7 @@ async def check_updates():
 
     if latest_version_spec > current_version_spec:
         print(f"New version available: {latest_version}")
+        return True
+    else:
+        print(f"Running latest version: {current_version}")
+        return False

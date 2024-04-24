@@ -21,7 +21,7 @@ import time
 import typing
 import bittensor as bt
 from tinydb import TinyDB, where
-
+from hip.version import check_updates
 import hip
 
 # import base miner class which takes care of most of the boilerplate
@@ -214,6 +214,10 @@ class Miner(BaseMinerNeuron):
 # This is the main function, which runs the miner.
 if __name__ == "__main__":
     bt.logging.info("Starting miner...")
+    updateAvailable = check_updates()
+    if updateAvailable:
+        bt.logging.info("Update available. Please update the miner.")
+        exit(1)
     with Miner() as miner:
         while True:
             bt.logging.info(f"Miner running... {time.time()}")
