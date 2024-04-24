@@ -24,7 +24,8 @@ async def check_updates() -> bool:
     latest_version_spec = generate_spec_version(latest_version)
     current_version = get_version()
     current_version_spec = generate_spec_version(current_version)
-
+    print(f"Latest version: {latest_version}")
+    print(f"Current version: {current_version}")
     if latest_version_spec > current_version_spec:
         print(f"New version available: {latest_version}")
         return True
