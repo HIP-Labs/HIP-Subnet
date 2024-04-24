@@ -82,12 +82,14 @@ class Miner(BaseMinerNeuron):
         print(f"Timeout for the task: {task['id']} is {synapse.timeout} seconds")
         print(f"Configured timeout for the task: {task['id']} is {timeout} seconds")
         # TODO: Commented out the timeout reconfigure it
-        # if synapse.timeout:
-        #     timeout = synapse.timeout
+        if synapse.timeout:
+            timeout = synapse.timeout
         while time.time() - start_time < timeout:
-            if self.answers_db.search(where("id") == synapse.id):
-                answered = True
-                break
+            answers = self.answers_db.all()
+            for answer in answers:
+                if answer["id"] == synapse.id:
+                    answered = True
+                    break
             time.sleep(1)
         if not answered:
             print(f"Task: {task['id']} not answered within the timeout")
