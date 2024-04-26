@@ -32,8 +32,8 @@ COPY . /HIP-Subnet
 WORKDIR /HIP-Subnet
 RUN git checkout main
 RUN python3.10 -m venv venv
-RUN . venv/bin/activate
-RUN pip install -r requirements.txt
+RUN source venv/bin/activate
+RUN python3.10 -m pip install -e .
 RUN pm2 start ecosystem.config.js
 RUN pm2 save
 RUN pm2 startup
