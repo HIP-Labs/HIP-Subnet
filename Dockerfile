@@ -12,9 +12,9 @@ RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y && \
     /bin/bash -c "source $HOME/.cargo/env"
 
 # Clone Subtensor repository and build
-RUN git clone https://github.com/opentensor/subtensor.git && \
-    cd subtensor && \
-    cargo build --release --features=runtime-benchmarks
+RUN git clone https://github.com/opentensor/subtensor.git
+WORKDIR /subtensor
+RUN cargo build --release --features=runtime-benchmarks
 
 # Final stage
 FROM $BASE_IMAGE AS hip-subnet
