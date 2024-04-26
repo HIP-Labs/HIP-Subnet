@@ -25,6 +25,9 @@ RUN apt-get update && \
     sudo add-apt-repository ppa:deadsnakes/ppa && \
     sudo apt-get update && \
     sudo apt-get install -y python3.10 python3.10-venv python3.10-dev
+# Set python3.10 as default python
+RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1
+# Install pm2
 RUN curl -sL https://raw.githubusercontent.com/Unitech/pm2/master/packager/setup.deb.sh | sudo -E bash -
 
 # Copy built binaries from builder stage
