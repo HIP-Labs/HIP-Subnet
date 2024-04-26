@@ -2,18 +2,21 @@ ARG BASE_IMAGE=ubuntu:20.04
 # Builder stage
 FROM $BASE_IMAGE AS builder
 ENV DEBIAN_FRONTEND=noninteractive
+ENV RUST_BACKTRACE 1
 
 # Install necessary dependencies
 RUN apt-get update && \
     apt-get install -y make build-essential git clang curl libssl-dev llvm libudev-dev protobuf-compiler
 
 # Install Rust
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-ENV PATH="$HOME/.cargo/env:${PATH}"
+RUN set -o pipefail && curl https://sh.rustup.rs -sSf | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
+
 # Clone Subtensor repository and build
 RUN git clone https://github.com/opentensor/subtensor.git
 WORKDIR /subtensor
-RUN cargo build --release --features=runtime-benchmarks
+RUN /subtensor/scripts/init.sh
+RUN cargo build --release --features runtime-benchmarks --locked
 
 # Final stage
 FROM $BASE_IMAGE AS hip-subnet
