@@ -21,7 +21,10 @@ FROM $BASE_IMAGE AS hip-subnet
 
 # Install necessary dependencies
 RUN apt-get update && \
-    apt-get install -y curl git python3.10-venv
+    apt-get install -y curl git software-properties-common && \
+    sudo add-apt-repository ppa:deadsnakes/ppa && \
+    sudo apt-get update && \
+    sudo apt-get install -y python3.10 python3.10-venv python3.10-dev
 RUN curl -sL https://raw.githubusercontent.com/Unitech/pm2/master/packager/setup.deb.sh | sudo -E bash -
 
 # Copy built binaries from builder stage
