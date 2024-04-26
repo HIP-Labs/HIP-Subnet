@@ -9,7 +9,7 @@ RUN apt-get update && \
 
 # Install Rust
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-RUN source $HOME/.cargo/env
+ENV PATH="$HOME/.cargo/env:${PATH}"
 # Clone Subtensor repository and build
 RUN git clone https://github.com/opentensor/subtensor.git
 WORKDIR /subtensor
