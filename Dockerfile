@@ -8,9 +8,8 @@ RUN apt-get update && \
     apt-get install -y make build-essential git clang curl libssl-dev llvm libudev-dev protobuf-compiler
 
 # Install Rust
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y && \
-    /bin/bash -c "source $HOME/.cargo/env"
-
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+RUN source $HOME/.cargo/env
 # Clone Subtensor repository and build
 RUN git clone https://github.com/opentensor/subtensor.git
 WORKDIR /subtensor
