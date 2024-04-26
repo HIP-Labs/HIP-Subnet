@@ -1,14 +1,21 @@
 ARG BASE_IMAGE=ubuntu:20.04
 # Builder stage
 FROM $BASE_IMAGE AS builder
-ENV DEBIAN_FRONTEND=noninteractive
+
+SHELL ["/bin/bash", "-c"]
+
+# This is being set so that no interactive components are allowed when updating.
+ARG DEBIAN_FRONTEND=noninteractive
+
+# show backtraces
 ENV RUST_BACKTRACE 1
 
-# Install necessary dependencies
+# Necessary libraries for Rust execution
 RUN apt-get update && \
-    apt-get install -y make build-essential git clang curl libssl-dev llvm libudev-dev protobuf-compiler
+    apt-get install -y curl build-essential protobuf-compiler clang git && \
+    rm -rf /var/lib/apt/lists/*
 
-# Install Rust
+# Install cargo and Rust
 RUN set -o pipefail && curl https://sh.rustup.rs -sSf | sh -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 
