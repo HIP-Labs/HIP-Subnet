@@ -21,10 +21,10 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # Install necessary dependencies
 RUN apt-get update && \
-    apt-get install -y curl git software-properties-common && \
-    sudo add-apt-repository ppa:deadsnakes/ppa && \
-    sudo apt-get update && \
-    sudo apt-get install -y python3.10 python3.10-venv python3.10-dev
+    apt-get install -y sudo curl git software-properties-common && \
+    add-apt-repository ppa:deadsnakes/ppa && \
+    apt-get update && \
+    apt-get install -y python3.10 python3.10-venv python3.10-dev
 # Set python3.10 as default python
 RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1
 # Install pm2
