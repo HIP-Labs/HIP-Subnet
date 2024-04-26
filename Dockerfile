@@ -1,7 +1,7 @@
 ARG BASE_IMAGE=ubuntu:20.04
-
 # Builder stage
 FROM $BASE_IMAGE AS builder
+ENV DEBIAN_FRONTEND=noninteractive
 
 # Install necessary dependencies
 RUN apt-get update && \
@@ -18,6 +18,7 @@ RUN cargo build --release --features=runtime-benchmarks
 
 # Final stage
 FROM $BASE_IMAGE AS hip-subnet
+ENV DEBIAN_FRONTEND=noninteractive
 
 # Install necessary dependencies
 RUN apt-get update && \
