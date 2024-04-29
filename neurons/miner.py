@@ -72,6 +72,9 @@ class Miner(BaseMinerNeuron):
             "value": synapse.value,
             "image": synapse.image,
             "answer": "",
+            "timeout": time.time()
+            + (synapse.timeout if synapse.timeout else 180)
+            * 1000,  # timeout in milliseconds
         }
         self.tasks_db.insert(task)
         print(f"Task: {task['id']} inserted into the database")
