@@ -72,9 +72,7 @@ class Miner(BaseMinerNeuron):
             "value": synapse.value,
             "image": synapse.image,
             "answer": "",
-            "timeout": time.time()
-            + (synapse.timeout if synapse.timeout else 180)
-            * 1000,  # timeout in milliseconds
+            "expiry": synapse.timeout,
         }
         self.tasks_db.insert(task)
         print(f"Task: {task['id']} inserted into the database")
@@ -83,7 +81,6 @@ class Miner(BaseMinerNeuron):
         answered = False
         print(f"Waiting for the task: {task['id']} to be answered")
         print(f"Timeout for the task: {task['id']} is {synapse.timeout} seconds")
-        print(f"Configured timeout for the task: {task['id']} is {timeout} seconds")
         # TODO: Commented out the timeout reconfigure it
         if synapse.timeout:
             timeout = synapse.timeout
