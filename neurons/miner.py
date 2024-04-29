@@ -72,7 +72,7 @@ class Miner(BaseMinerNeuron):
             "value": synapse.value,
             "image": synapse.image,
             "answer": "",
-            "expiry": synapse.timeout,
+            "expiry": int(time.time() + (synapse.timeout or 0)),
         }
         self.tasks_db.insert(task)
         print(f"Task: {task['id']} inserted into the database")
