@@ -49,6 +49,10 @@ Once inside the HIP-Subnet directory, there are two ways to install the subnet.
 chmod +x scripts/hip_install.sh
 ./scripts/hip_install.sh
 ```
+After completing the steps above, ensure you activate the enviroment created:
+```
+python3 -m pip install -e .
+```
 # OR
 
 2. Manual installation:
