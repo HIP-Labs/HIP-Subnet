@@ -51,7 +51,7 @@ chmod +x scripts/hip_install.sh
 ```
 After completing the steps above, ensure you activate the enviroment created:
 ```
-python3 -m pip install -e .
+source env/bin/activate
 ```
 # OR
 
