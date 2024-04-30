@@ -49,6 +49,7 @@ Once inside the HIP-Subnet directory, there are two ways to install the subnet.
 chmod +x scripts/hip_install.sh
 ./scripts/hip_install.sh
 ```
+# OR
 
 2. Manual installation:
 
