@@ -4,7 +4,7 @@
 
 # HIP (Human Intelligence Primitive) Subnet
 
-> The HIP (Human Intelligence Primitive) Subnet is a Bittensor subnet designed to provide human intelligence services to other subnets. It will allow other subnets to send their data to the HIP Subnet for human evaluation, testing, and feedback. The HIP Subnet harnesses the collective intelligence of human miners who compete to provide high-quality evaluations and insights on the submitted data. Validators in the HIP Subnet assess the quality of the miners' responses and distribute rewards accordingly, creating an incentive mechanism that promotes diverse and valuable human feedback.
+> The HIP (Human Intelligence Primitive) Subnet is a [Bittensor](https://github.com/opentensor/bittensor) subnet designed to provide human intelligence services to other subnets. It will allow other subnets to send their data to the HIP Subnet for human evaluation, testing, and feedback. The HIP Subnet harnesses the collective intelligence of human miners who compete to provide high-quality evaluations and insights on the submitted data. Validators in the HIP Subnet assess the quality of the miners' responses and distribute rewards accordingly, creating an incentive mechanism that promotes diverse and valuable human feedback.
 
 
 ## Features
@@ -57,13 +57,15 @@ create the enviroment and Install the required dependencies with:
 sudo apt-get update
 sudo apt install python3.10-venv
 python3 -m venv env 
-source env/bin/activate
-python3 -m pip install -e .
-```
 
-After completing the steps above, ensure you activate the enviroment created during the installation process with following command:
+```
+After completing the steps above, ensure you activate the enviroment created:
 ```
 source env/bin/activate
+```
+Complete the installation process with following command:
+```
+python3 -m pip install -e .
 ```
 To confirm you are in the enviroment created, you will see a little (env) on the left hand side of your username within the terminal.
 `(env) (base) user@root:~/HIP-Subnet$`
@@ -73,6 +75,25 @@ To confirm you are in the enviroment created, you will see a little (env) on the
 ## Participating 
 
 Now that the installation is complete it is now time to participate in the network as a miner or validator.
+First you must register with the subnet on testnet in order to participate as a miner or validator.
+
+Register your bittensor keys with: 
+```
+btcli subnet register
+--wallet.name <YOUR_WALLET_COLDKEY>
+--wallet.hotkey <YOUR_WALLET_HOTKEY>
+--netuid 134
+--subtensor.network test
+```
+
+You can confirm your key is registered to the subnet with the following command:
+```
+btcli w inspect
+--wallet.name <YOUR_WALLET_COLDKEY>
+--wallet.hotkey <YOUR_WALLET_HOTKEY>
+--netuid 134
+--subtensor.network test
+```
 
 ##### Mining
 
@@ -82,14 +103,19 @@ Mining can be run on any device within the local network once the miner script i
  - Configure the network settings to allow incoming connections to the miner's frontend web application port (port 3001 is the default).
  - If the local network has a firewall or security measures in place, make sure to open the necessary ports or create appropriate firewall rules to allow communication with the miner.
 
+NOTE - during this testing phase it is suggested you run your miner and frontend scripts, in tmux sessions.
+tmux is a terminal multiplexer. It lets you switch easily between several programs in one terminal, detach them (they keep running in the background) and reattach them to a different terminal. You can visit the repo [here](https://github.com/tmux/tmux/wiki) and follow the official guides if you require assistance.
 
-Register your miner: 
+
+Run the miner after your keys have been registered: 
 ```
-btcli subnet register --wallet.name <YOUR_WALLET_COLDKEY> --wallet.hotkey <YOUR_WALLET_HOTKEY> --netuid 134 --subtensor.network test
-```
-Run the miner: 
-```
-python3 neurons/miner.py --netuid 134 --subtensor.network test --wallet.name <YOUR_WALLET_COLDKEY> --wallet.hotkey <YOUR_WALLET_HOTKEY> --logging.debug
+python3 neurons/miner.py
+--wallet.name <YOUR_WALLET_COLDKEY>
+--wallet.hotkey <YOUR_WALLET_HOTKEY>
+--netuid 134
+--subtensor.network test
+--logging.debug
+--logging.trace
 ```
 To run the miner frontend script, follow these steps:
 
@@ -120,17 +146,28 @@ INFO:     Uvicorn running on http://localhost:3001 (Press CTRL+C to quit)
 
 ##### Validating
 
-Register your validator:
-```
-btcli subnet register --wallet.name <YOUR_WALLET_COLDKEY> --wallet.hotkey <YOUR_WALLET_HOTKEY> --netuid 134 --subtensor.network test
+NOTE - during this testing phase it is suggested you run your validator script in a tmux session.
+tmux is a terminal multiplexer. It lets you switch easily between several programs in one terminal, detach them (they keep running in the background) and reattach them to a different terminal. You can visit the repo [here](https://github.com/tmux/tmux/wiki) and follow the official guides if you require assistance.
+
 ```
 Stake your validator:
 ```
-btcli subnet stake --wallet.name <YOUR_WALLET_COLDKEY> --wallet.hotkey <YOUR_WALLET_HOTKEY> --amount 100 --netuid 134 --subtensor.network test
+btcli subnet stake 
+--wallet.name <YOUR_WALLET_COLDKEY> 
+--wallet.hotkey <YOUR_WALLET_HOTKEY> 
+--amount <DESIRED_AMOUNT_OF_TAO> 
+--netuid 134
+--subtensor.network test
 ```
 Run the validator:
 ```
-python3 neurons/validator.py --netuid 134 --subtensor.network test --wallet.name <YOUR_WALLET_COLDKEY> --wallet.hotkey <YOUR_WALLET_HOTKEY> --logging.debug
+python3 neurons/validator.py 
+--wallet.name <YOUR_WALLET_COLDKEY> 
+--wallet.hotkey <YOUR_WALLET_HOTKEY> 
+--netuid 134 
+--subtensor.network test 
+--logging.debug
+--logging.trace
 ```
 ---
 
