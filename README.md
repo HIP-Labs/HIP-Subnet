@@ -149,7 +149,7 @@ INFO:     Uvicorn running on http://localhost:3001 (Press CTRL+C to quit)
 NOTE - during this testing phase it is suggested you run your validator script in a tmux session.
 tmux is a terminal multiplexer. It lets you switch easily between several programs in one terminal, detach them (they keep running in the background) and reattach them to a different terminal. You can visit the repo [here](https://github.com/tmux/tmux/wiki) and follow the official guides if you require assistance.
 
-```
+
 Stake your validator:
 ```
 btcli subnet stake 
@@ -184,8 +184,9 @@ We welcome contributions to the HIP Subnet! If you'd like to contribute, please 
 
 ---
 
-#### License
 ```
+#### License
+
 # The MIT License (MIT)
 # Copyright © 2024 HIP-LABS 
 
