@@ -20,7 +20,7 @@ module.exports = {
     },
     // HIP Miner Frontend
     {
-      name: "HIP_Miner_Frontend",
+      name: "frontend",
       cwd: "~/HIP-Subnet",
       script: "uvicorn",
       args: "frontend:app --port 3001",
