@@ -1,9 +1,9 @@
 echo "Setting up Subtensor Testnet" &&
     cd ~ &&
     sudo apt update &&
-    sudo apt install -y make build-essential git clang curl libssl-dev llvm libudev-dev protobuf-compiler  > /dev/null 2>&1 &&
-
-    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash &&
+    echo "Installing dependencies" &&
+    sudo apt install -y make build-essential git clang curl libssl-dev llvm libudev-dev protobuf-compiler tmux  > /dev/null 2>&1 &&
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash &&
     source ~/.nvm/nvm.sh &&
     nvm install --lts &&
     npm install -g pm2 &&
