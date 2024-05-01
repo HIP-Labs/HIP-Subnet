@@ -2,7 +2,11 @@ echo "Setting up Subtensor Testnet" &&
     cd ~ &&
     sudo apt update &&
     sudo apt install -y make build-essential git clang curl libssl-dev llvm libudev-dev protobuf-compiler  > /dev/null 2>&1 &&
-    curl -sL https://raw.githubusercontent.com/Unitech/pm2/master/packager/setup.deb.sh | sudo -E bash - &&
+
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash &&
+    source ~/.nvm/nvm.sh &&
+    nvm install --lts &&
+    npm install -g pm2 &&
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y &&
     source "$HOME/.cargo/env" &&
     git clone https://github.com/opentensor/subtensor.git &&
