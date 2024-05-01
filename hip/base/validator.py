@@ -231,13 +231,18 @@ class BaseValidatorNeuron(BaseNeuron):
             bt.logging.warning(
                 f"Scores contain NaN values. This may be due to a lack of responses from miners, or a bug in your reward functions."
             )
+            print(
+                "Scores contain NaN values. This may be due to a lack of responses from miners, or a bug in your reward functions."
+            )
 
         # Calculate the average reward for each uid across non-zero values.
         # Replace any NaN values with 0.
         raw_weights = torch.nn.functional.normalize(self.scores, p=1, dim=0)
 
         bt.logging.debug("raw_weights", raw_weights)  # type: ignore
+        print("raw_weights", raw_weights)
         bt.logging.debug("raw_weight_uids", self.metagraph.uids.to("cpu"))  # type: ignore
+        print("raw_weight_uids", self.metagraph.uids.to("cpu"))
         # Process the raw weights to final_weights via subtensor limitations.
         (
             processed_weight_uids,
@@ -250,7 +255,9 @@ class BaseValidatorNeuron(BaseNeuron):
             metagraph=self.metagraph,
         )
         bt.logging.debug("processed_weights", processed_weights)
+        print("processed_weights", processed_weights)
         bt.logging.debug("processed_weight_uids", processed_weight_uids)
+        print("processed_weight_uids", processed_weight_uids)
 
         # Convert to uint16 weights and uids.
         (
@@ -260,8 +267,9 @@ class BaseValidatorNeuron(BaseNeuron):
             uids=processed_weight_uids, weights=processed_weights
         )
         bt.logging.debug("uint_weights", uint_weights)
+        print("uint_weights", uint_weights)
         bt.logging.debug("uint_uids", uint_uids)
-
+        print("uint_uids", uint_uids)
         # Set the weights on chain via our subtensor connection.
         result, msg = self.subtensor.set_weights(
             wallet=self.wallet,
@@ -274,8 +282,10 @@ class BaseValidatorNeuron(BaseNeuron):
         )
         if result is True:
             bt.logging.info("set_weights on chain successfully!")
+            print("set_weights on chain successfully!")
         else:
             bt.logging.error("set_weights failed", msg)
+            print("set_weights failed", msg)
 
     def resync_metagraph(self):
         print("resync_metagraph called")
