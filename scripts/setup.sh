@@ -5,6 +5,8 @@ export DEBIAN_FRONTEND=noninteractive
 export NEEDRESTART_MODE=a
 export NEEDRESTART_SUSPEND=1
 
+export BIYellow='\033[1;93m'
+
 # Function to check if a command exists
 command_exists() {
     command -v "$1" >/dev/null 2>&1
@@ -82,7 +84,7 @@ setup_miner() {
         check_mnemonic
         btcli wallet regen_coldkey --wallet.name default --wallet.hotkey default --subtensor.network test --no_password --no_prompt  --mnemonic $MNEMONIC
         btcli wallet regen_hotkey  --wallet.name default --wallet.hotkey default --subtensor.network test --no_password --no_prompt  --mnemonic $MNEMONIC
-        btcli subnet register --wallet.name default --wallet.hotkey default --subtensor.network test --no_prompt --netuid 134
+        # btcli subnet register --wallet.name default --wallet.hotkey default --subtensor.network test --no_prompt --netuid 134
     fi
 }
 
@@ -121,8 +123,9 @@ pip install -e .
 setup_miner
 
 echo "HIP Subnet setup complete"
-echo "Running HIP Subnet"
-echo "Run the following command:"
-echo "cd ~/HIP-Subnet && source venv/bin/activate"
-echo "Now ensure the wallet is configured and run the following commands:"
-echo "pm2 start ecosystem.config.js"
+echo "${BIYellow}Note:"
+echo "${BIYellow}First ensure that your coldkey has enough Tao to register a miner."
+echo "${BIYellow}Then run the following commands:"
+echo "${BIYellow}$ cd ~/HIP-Subnet && source venv/bin/activate"
+echo "${BIYellow}$ btcli subnet register --wallet.name default --wallet.hotkey default --subtensor.network test --no_prompt --netuid 134"
+echo "${BIYellow}pm2 start ecosystem.config.js"
