@@ -13,7 +13,7 @@ sudo usermod -aG docker ${USER}
 docker compose down --volumes
 
 echo "Installing Node.js and PM2"
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
 source ~/.nvm/nvm.sh
 nvm install --lts
 npm install -g pm2
@@ -30,12 +30,12 @@ echo "Setting up HIP Subnet"
 cd ~
 git clone https://github.com/HIP-Labs/HIP-Subnet
 cd HIP-Subnet
-sudo add-apt-repository ppa:deadsnakes/ppa
-sudo apt install -y python3.10 python3.10-venv python3.10-dev
-sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1
-python3.10 -m venv venv
-source venv/bin/activate
-pip install -e .
+sudo add-apt-repository ppa:deadsnakes/ppa -y > /dev/null 2>&1
+sudo apt install -y python3.10 python3.10-venv python3.10-dev > /dev/null 2>&1
+sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1 > /dev/null 2>&1
+python3.10 -m venv venv > /dev/null 2>&1
+source venv/bin/activate > /dev/null 2>&1
+pip install -e . > /dev/null 2>&1
 
 echo "Running HIP Subnet"
 echo "First make sure the Subtensor Testnet is running"
