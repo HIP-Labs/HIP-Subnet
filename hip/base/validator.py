@@ -221,6 +221,7 @@ class BaseValidatorNeuron(BaseNeuron):
             bt.logging.debug("Stopped")
 
     def set_weights(self):
+        print("set_weights called")
         """
         Sets the validator weights to the metagraph hotkeys based on the scores it has received from the miners. The weights determine the trust and incentive level the validator assigns to miner nodes on the network.
         """
@@ -277,6 +278,7 @@ class BaseValidatorNeuron(BaseNeuron):
             bt.logging.error("set_weights failed", msg)
 
     def resync_metagraph(self):
+        print("resync_metagraph called")
         """Resyncs the metagraph and updates the hotkeys and moving averages based on the new metagraph."""
         bt.logging.info("resync_metagraph()")
 
