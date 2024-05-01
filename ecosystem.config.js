@@ -16,12 +16,10 @@ module.exports = {
       script: "./neurons/miner.py",
       interpreter: "~/HIP-Subnet/venv/bin/python",
       autorestart: true,
-      cwd: "~/HIP-Subnet",
     },
     // HIP Miner Frontend
     {
       name: "frontend",
-      cwd: "~/HIP-Subnet",
       script: "uvicorn",
       args: "frontend:app --port 3001",
       autorestart: true,
