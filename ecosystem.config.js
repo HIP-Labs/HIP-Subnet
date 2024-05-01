@@ -19,11 +19,11 @@ module.exports = {
       autorestart: true,
     },
     // HIP Miner Frontend
-    {
-      name: "frontend",
-      script: "uvicorn",
-      args: "frontend:app --host 0.0.0.0 --port 3001",
-      autorestart: true,
-    },
+    // {
+    //   name: "frontend",
+    //   script: "uvicorn",
+    //   args: "frontend:app --host 0.0.0.0 --port 3001",
+    //   autorestart: true,
+    // },
   ],
 };

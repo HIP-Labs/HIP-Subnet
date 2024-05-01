@@ -82,10 +82,53 @@ setup_miner() {
     else
         # if MNEMONIC variable is not set, throw an error
         check_mnemonic
-        btcli wallet regen_coldkey --wallet.name default --wallet.hotkey default --subtensor.network test --no_password --no_prompt  --mnemonic $MNEMONIC
-        btcli wallet regen_hotkey  --wallet.name default --wallet.hotkey default --subtensor.network test --no_password --no_prompt  --mnemonic $MNEMONIC
+        btcli wallet regen_coldkey --wallet.name default --wallet.hotkey default --subtensor.network test --no_password --no_prompt --mnemonic $MNEMONIC
+        btcli wallet regen_hotkey --wallet.name default --wallet.hotkey default --subtensor.network test --no_password --no_prompt --mnemonic $MNEMONIC
         # btcli subnet register --wallet.name default --wallet.hotkey default --subtensor.network test --no_prompt --netuid 134
     fi
+}
+
+# Define setup_frontend() function
+setup_frontend() {
+    # Define the service unit file path
+    SERVICE_FILE="/etc/systemd/system/uvicorn_frontend.service"
+    # Check if the service unit file already exists
+    if [ -f "$SERVICE_FILE" ]; then
+        echo "Service unit file already exists"
+        # restart the service
+        sudo systemctl restart uvicorn_frontend
+        return
+    fi
+    echo "Setting up frontend service"
+    # Define the content of the service unit file
+    SERVICE_CONTENT="[Unit]
+Description=UVicorn Frontend Service
+After=network.target
+
+[Service]
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/HIP-Subnet
+ExecStart=/home/ubuntu/HIP-Subnet/venv/bin/uvicorn frontend:app --host 0.0.0.0 --port 5001
+Restart=always
+
+[Install]
+WantedBy=multi-user.target"
+
+    # Write the service unit file
+    echo "$SERVICE_CONTENT" | sudo tee "$SERVICE_FILE" >/dev/null
+
+    # Reload systemd
+    sudo systemctl daemon-reload
+
+    # Enable the service
+    sudo systemctl enable uvicorn_frontend
+
+    # Start the service
+    sudo systemctl start uvicorn_frontend
+
+    # Check the status of the service
+    sudo systemctl status uvicorn_frontend˝
 }
 
 # Main script
@@ -121,6 +164,7 @@ pip install -r requirements.txt
 pip install -e .
 
 setup_miner
+setup_frontend
 
 echo "HIP Subnet setup complete"
 echo "\n\n"
