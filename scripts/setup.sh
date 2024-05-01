@@ -177,5 +177,5 @@ echo "$ btcli w balance --wallet.name default --subtensor.network test --wallet.
 echo "Run the following command to register to the subnet:"
 echo "$ btcli subnet register --wallet.name default --wallet.hotkey default --subtensor.network test --no_prompt --netuid 134"
 echo "Run the following command to start the server:"
-echo "$ pm2 start ecosystem.config.js"
+echo "$ source ~/.nvm/nvm.sh && pm2 start ecosystem.config.js"
 echo "Now open the browser and go to http://[server-public-ip]:3001 to see the HIP Subnet dashboard"
