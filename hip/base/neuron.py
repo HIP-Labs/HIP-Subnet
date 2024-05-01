@@ -151,19 +151,33 @@ class BaseNeuron(ABC):
 
     def should_set_weights(self) -> bool:
         # Don't set weights on initialization.
+        print(f"should_set_weights(): step: {self.step}")
         if self.step == 0:
             return False
 
+        print(
+            f"should_set_weights(): disable_set_weights: {self.config.neuron.disable_set_weights}"
+        )
         # Check if enough epoch blocks have elapsed since the last epoch.
         if self.config.neuron.disable_set_weights:
             return False
 
+        print(
+            f"should_set_weights(): validator_permit: {self.metagraph.validator_permit[self.uid]}"
+        )
+        print(
+            f"should_set_weights(): hasattr(self, 'set_weights'): {hasattr(self, 'set_weights')}"
+        )
         # If neuron has validator permit we assume its running the validator code. If it is a dual permit neuron then we check that it also has a set_weights method (only true if it is running validator neuron)
         if not self.metagraph.validator_permit[self.uid] or not hasattr(
             self, "set_weights"
         ):
             return False
 
+        print(f"should_set_weights(): block: {self.block}")
+        print(
+            f"should_set_weights(): last_update: {self.metagraph.last_update[self.uid]}"
+        )
         # Define appropriate logic for when set weights.
         return (
             self.block - self.metagraph.last_update[self.uid]
