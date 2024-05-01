@@ -2,6 +2,8 @@
 
 # Set noninteractive mode
 export DEBIAN_FRONTEND=noninteractive
+export NEEDRESTART_MODE=a
+export NEEDRESTART_SUSPEND=1
 
 # Function to check if a command exists
 command_exists() {
@@ -65,15 +67,20 @@ take_mnemonic() {
     local mnemonic
     while true; do
         read -p "Please enter your 12-word mnemonic: " mnemonic
-        # Split the input string into an array using space as delimiter
-        IFS=' ' read -ra words <<<"$mnemonic"
-        # Check if the array contains exactly 12 words
-        if [ ${#words[@]} -eq 12 ]; then
-            # If mnemonic is valid, return the mnemonic
-            echo "$mnemonic"
-            break
+        # Check if mnemonic is empty
+        if [ -z "$mnemonic" ]; then
+            echo "Mnemonic cannot be empty. Please try again."
         else
-            echo "Invalid mnemonic. Please enter exactly 12 words."
+            # Split the input string into an array using space as delimiter
+            IFS=' ' read -ra words <<<"$mnemonic"
+            # Check if the array contains exactly 12 words
+            if [ ${#words[@]} -eq 12 ]; then
+                # If mnemonic is valid, return the mnemonic
+                echo "$mnemonic"
+                break
+            else
+                echo "Invalid mnemonic. Please enter exactly 12 words."
+            fi
         fi
     done
 }
