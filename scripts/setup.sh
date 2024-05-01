@@ -10,6 +10,15 @@ command_exists() {
     command -v "$1" >/dev/null 2>&1
 }
 
+check_mnemonic() {
+    if [ -z "$MNEMONIC" ]; then
+        echo "MNEMONIC variable is not set. Exiting"
+        echo "Please set the MNEMONIC variable to the mnemonic of the wallet"
+        echo "Example: export MNEMONIC='word1 word2 word3 ...'"
+        exit 1
+    fi
+}
+
 # Function to install Docker
 install_docker() {
     if ! command_exists docker; then
@@ -63,39 +72,22 @@ setup_python() {
     sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1
 }
 
-take_mnemonic() {
-    local mnemonic
-    while true; do
-        read -p "Please enter your 12-word mnemonic: " mnemonic
-        # Check if mnemonic is empty
-        if [ -z "$mnemonic" ]; then
-            echo "Mnemonic cannot be empty. Please try again."
-        else
-            # Split the input string into an array using space as delimiter
-            IFS=' ' read -ra words <<<"$mnemonic"
-            # Check if the array contains exactly 12 words
-            if [ ${#words[@]} -eq 12 ]; then
-                # If mnemonic is valid, return the mnemonic
-                echo "$mnemonic"
-                break
-            else
-                echo "Invalid mnemonic. Please enter exactly 12 words."
-            fi
-        fi
-    done
-}
-
 # Define setup_wallet() function
-setup_wallet() {
+setup_miner() {
     if ! command_exists btcli; then
         echo "Btcli not found. Exiting"
         exit 1
     else
-        btcli wallet regen_coldkey --mnemonic $(take_mnemonic) --wallet.name default --wallet.hotkey default --subtensor.network test --no_password --no_prompt
+        # if MNEMONIC variable is not set, throw an error
+        check_mnemonic
+        btcli wallet regen_coldkey --wallet.name default --wallet.hotkey default --subtensor.network test --no_password --no_prompt  --mnemonic $MNEMONIC
+        btcli wallet regen_hotkey  --wallet.name default --wallet.hotkey default --subtensor.network test --no_password --no_prompt  --mnemonic $MNEMONIC
+        btcli subnet register --wallet.name default --wallet.hotkey default --subtensor.network test --no_prompt --netuid 134
     fi
 }
 
 # Main script
+check_mnemonic
 echo "Setting up Subtensor Testnet"
 echo "Installing dependencies"
 sudo -E apt update
@@ -125,7 +117,7 @@ python3.10 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 
-setup_wallet
+setup_miner
 
 echo "HIP Subnet setup complete"
 echo "Running HIP Subnet"

@@ -14,6 +14,7 @@ module.exports = {
     {
       name: "miner",
       script: "./neurons/miner.py",
+      args: "--netuid 134 --subtensor.network test --wallet.name default --wallet.hotkey default --logging.debug",
       interpreter: "/home/ubuntu/HIP-Subnet/venv/bin/python",
       autorestart: true,
     },
@@ -21,7 +22,7 @@ module.exports = {
     {
       name: "frontend",
       script: "uvicorn",
-      args: "frontend:app --port 3001",
+      args: "frontend:app --port 80",
       autorestart: true,
     },
   ],
