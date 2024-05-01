@@ -58,6 +58,35 @@ setup_python() {
     sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1
 }
 
+take_mnemonic() {
+    local mnemonic
+    while true; do
+        read -p "Please enter your 12-word mnemonic: " mnemonic
+        # Split the input string into an array using space as delimiter
+        IFS=' ' read -ra words <<<"$mnemonic"
+        # Check if the array contains exactly 12 words
+        if [ ${#words[@]} -eq 12 ]; then
+            # If mnemonic is valid, return the mnemonic
+            echo "$mnemonic"
+            break
+        else
+            echo "Invalid mnemonic. Please enter exactly 12 words."
+        fi
+    done
+}
+
+# Define setup_wallets() function
+setup_wallets() {
+    if ! command_exists btcli; then
+        echo "Btcli not found. Exiting"
+        exit 1
+    else
+        btcli wallet regen_coldkey --mnemonic $(take_mnemonic)
+        btcli wallet regen_coldkey --mnemonic $(take_mnemonic)
+        btcli wallet regen_coldkey --mnemonic $(take_mnemonic)
+    fi
+}
+
 # Main script
 echo "Setting up Subtensor Testnet"
 echo "Installing dependencies"
@@ -87,6 +116,8 @@ echo "Creating virtual environment and installing HIP Subnet"
 python3.10 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
+
+setup_wallets
 
 echo "HIP Subnet setup complete"
 echo "Running HIP Subnet"
