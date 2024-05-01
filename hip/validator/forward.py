@@ -69,11 +69,12 @@ async def forward(self):
     # For each response print the response's id and the response's answer.
     for response in responses:
         print(
-            f"Response from {response.id}: {response.answer} Code: {response.dendrite.status_code}"
+            f"Response from {response.axon.hotkey}: {response.answer} Code: {response.dendrite.status_code} Message: {response.dendrite.status_message} Task ID: {response.id}"
         )
     # TODO(developer): Define how the validator scores responses.
     # Adjust the scores based on responses from miners.
     rewards = get_rewards(self, task=task, responses=responses)
+    print(f"Rewards: {rewards}")
     bt.logging.info(f"Scored responses: {rewards}")
     # Update the scores based on the rewards. You may want to define your own update_scores function for custom behavior.
     self.update_scores(rewards, miner_uids)
