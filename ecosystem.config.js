@@ -14,7 +14,7 @@ module.exports = {
     {
       name: "miner",
       script: "./neurons/miner.py",
-      interpreter: "~/HIP-Subnet/venv/bin/python",
+      interpreter: "/home/ubuntu/HIP-Subnet/venv/bin/python",
       autorestart: true,
     },
     // HIP Miner Frontend
