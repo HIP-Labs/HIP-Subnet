@@ -116,6 +116,7 @@ echo "Creating virtual environment and installing HIP Subnet"
 python3.10 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
+pip install -e .
 
 setup_miner
 
