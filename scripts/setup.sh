@@ -104,7 +104,7 @@ sudo -E apt install -y apt-transport-https ca-certificates curl software-propert
 install_docker
 
 # Make sure the user is in the docker group
-docker-compose down --volumes
+docker compose down --volumes
 
 install_node_pm2
 
