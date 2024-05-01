@@ -91,9 +91,7 @@ setup_wallets() {
         echo "Btcli not found. Exiting"
         exit 1
     else
-        btcli wallet regen_coldkey --mnemonic $(take_mnemonic)
-        btcli wallet regen_coldkey --mnemonic $(take_mnemonic)
-        btcli wallet regen_coldkey --mnemonic $(take_mnemonic)
+        btcli wallet regen_coldkey --mnemonic $(take_mnemonic) --wallet.name default --wallet.hotkey default --subtensor.network test --no_password --no_prompt
     fi
 }
 

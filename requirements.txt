@@ -2,3 +2,7 @@ bittensor==6.10.1
 torch
 loguru
 tinydb
+eth-hash==0.7.0
+eth-keys==0.5.1
+eth-typing==4.2.2
+eth-utils==2.3.1
