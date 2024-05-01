@@ -85,8 +85,8 @@ take_mnemonic() {
     done
 }
 
-# Define setup_wallets() function
-setup_wallets() {
+# Define setup_wallet() function
+setup_wallet() {
     if ! command_exists btcli; then
         echo "Btcli not found. Exiting"
         exit 1
@@ -125,7 +125,7 @@ python3.10 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 
-setup_wallets
+setup_wallet
 
 echo "HIP Subnet setup complete"
 echo "Running HIP Subnet"
