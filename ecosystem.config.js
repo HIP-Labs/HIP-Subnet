@@ -22,7 +22,7 @@ module.exports = {
     {
       name: "frontend",
       script: "uvicorn",
-      args: "frontend:app --port 80",
+      args: "frontend:app --port 3001",
       autorestart: true,
     },
   ],
