@@ -1,4 +1,4 @@
-bittensor
+bittensor==6.11.0
 torch
 loguru
 tinydb
