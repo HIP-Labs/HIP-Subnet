@@ -16,8 +16,8 @@ install_docker() {
         echo "Installing Docker"
         curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
         echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list >/dev/null
-        sudo apt update
-        sudo apt install docker-ce -y
+        sudo -E apt update
+        sudo -E apt install docker-ce -y
         sudo systemctl start docker
         sudo systemctl enable docker
         sudo usermod -aG docker "$USER"
@@ -58,8 +58,8 @@ setup_hip_subnet() {
 setup_python() {
     echo "Installing Python 3.10"
     sudo add-apt-repository ppa:deadsnakes/ppa -y
-    sudo apt update
-    sudo apt install -y python3.10 python3.10-venv python3.10-dev
+    sudo-E apt update
+    sudo -E apt install -y python3.10 python3.10-venv python3.10-dev
     sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1
 }
 
@@ -98,8 +98,8 @@ setup_wallet() {
 # Main script
 echo "Setting up Subtensor Testnet"
 echo "Installing dependencies"
-sudo apt update
-sudo apt install -y apt-transport-https ca-certificates curl software-properties-common tmux
+sudo -E apt update
+sudo -E apt install -y apt-transport-https ca-certificates curl software-properties-common tmux
 
 install_docker
 
