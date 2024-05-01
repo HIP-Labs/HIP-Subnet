@@ -90,6 +90,8 @@ class Miner(BaseMinerNeuron):
                 if answer["id"] == synapse.id:
                     answered = True
                     break
+            if answered:
+                break
             time.sleep(1)
         if not answered:
             print(f"Task: {task['id']} not answered within the timeout")
