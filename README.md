@@ -22,7 +22,7 @@
 
 ## Getting Started
 
-NOTE - Bittensor is currently supported on macOS and Linux with limited support for Windows.
+<em>note: Bittensor is currently supported on macOS and Linux with limited support for Windows.</em>
 
 To participate in the HIP Subnet as a miner or validator, follow these steps:
 
@@ -42,38 +42,58 @@ Enter the directory where the hip subnet was cloned:
 ```
 cd HIP-Subnet
 ```
-Once inside the HIP-Subnet directory, there are two ways to install the subnet. 
+Once inside the HIP-Subnet directory, there are multiple ways to install the subnet.
+---
 
-1. The scripted installation can be activated with:
+### Option 1: The scripted installation
+
+This option creates the enviroment and installs the subnet.
 ```
 chmod +x scripts/hip_install.sh
 ./scripts/hip_install.sh
 ```
-After completing the steps above, ensure you activate the enviroment created:
+After completing the step above, ensure you activate the enviroment created:
 ```
-source env/bin/activate
+source venv/bin/activate
 ```
 # OR
 
-2. Manual installation:
+### Option 2: Manual installation
 
 create the enviroment and Install the required dependencies with:
 ```
 sudo apt-get update
 sudo apt install python3.10-venv
-python3 -m venv env 
-
-```
-After completing the steps above, ensure you activate the enviroment created:
-```
-source env/bin/activate
-```
-Complete the installation process with following command:
-```
+python3 -m venv venv
+source venv/bin/activate
 python3 -m pip install -e .
 ```
+
+# OR
+
+#### Option 3: Automated Setup on Ubuntu Server (Recommended for mining)
+
+To set up a miner on an Ubuntu server instance (This works best on AWS), you can use the provided curl command:
+```
+curl https://raw.githubusercontent.com/HIP-Labs/HIP-Subnet/main/scripts/setup.sh | bash
+```
+Once this completes you will be presented terminal instructions on the next steps.
+
+Connect to your instance using its Public DNS with port `:5001` and start mining from anywhere:
+
+<em>Example:</em>
+```
+ec2-55-241-144-77.compute-1.amazonaws.com:5001
+```
+
+
+---
+After completing any of the chosen steps above, ensure you activate the enviroment created:
+```
+source venv/bin/activate
+```
 To confirm you are in the enviroment created, you will see a little (env) on the left hand side of your username within the terminal.
-`(env) (base) user@root:~/HIP-Subnet$`
+`(venv) (base) user@root:~/HIP-Subnet$`
 
 ---
 
@@ -82,45 +102,34 @@ To confirm you are in the enviroment created, you will see a little (env) on the
 Now that the installation is complete it is now time to participate in the network as a miner or validator.
 First you must register with the subnet on testnet in order to participate as a miner or validator.
 
+<em>note: if you installed your miner with <strong>Option 3</strong> you will already have completed the below steps. The following is not required</em>
+
 Register your bittensor keys with: 
 ```
-btcli subnet register
---wallet.name <YOUR_WALLET_COLDKEY>
---wallet.hotkey <YOUR_WALLET_HOTKEY>
---netuid 134
---subtensor.network test
+btcli subnet register --wallet.name <YOUR_WALLET_COLDKEY> --wallet.hotkey <YOUR_WALLET_HOTKEY> --netuid 134 --subtensor.network test
 ```
+<em>note: Ensure you replace <YOUR_WALLET_COLDKEY> and <YOUR_WALLET_HOTKEY> with your corresponding keys.</em>
 
 You can confirm your key is registered to the subnet with the following command:
 ```
-btcli w inspect
---wallet.name <YOUR_WALLET_COLDKEY>
---wallet.hotkey <YOUR_WALLET_HOTKEY>
---netuid 134
---subtensor.network test
+btcli w inspect --wallet.name <YOUR_WALLET_COLDKEY> --wallet.hotkey <YOUR_WALLET_HOTKEY> --netuid 134 --subtensor.network test
 ```
 
 ##### Mining
 
-Mining can be run on any device within the local network once the miner script is executed. However, there are a few considerations and steps to ensure that the miner can be accessed and utilized effectively across the local network:
+Miners are presented tasks to complete from the validators through a web interface. Mining can be run on any device within the local network once the miner script is executed. However, there are a few considerations and steps to ensure that the miner can be accessed and utilized effectively across the local network:
 
  - Ensure that the device running the miner script is connected to the local network and has a stable network connection.
  - Configure the network settings to allow incoming connections to the miner's frontend web application port (port 3001 is the default).
  - If the local network has a firewall or security measures in place, make sure to open the necessary ports or create appropriate firewall rules to allow communication with the miner.
 
-NOTE - during this testing phase it is suggested you run your miner and frontend scripts, in tmux sessions.
-tmux is a terminal multiplexer. It lets you switch easily between several programs in one terminal, detach them (they keep running in the background) and reattach them to a different terminal. You can visit the repo [here](https://github.com/tmux/tmux/wiki) and follow the official guides if you require assistance.
+<em> note: during this testing phase it is suggested you run your miner and frontend scripts, in tmux sessions.
+tmux is a terminal multiplexer. It lets you switch easily between several programs in one terminal, detach them (they keep running in the background) and reattach them to a different terminal. You can visit the repo [here](https://github.com/tmux/tmux/wiki) and follow the official guides if you require assistance. </em>
 
 
 Run the miner after your keys have been registered: 
 ```
-python3 neurons/miner.py
---wallet.name <YOUR_WALLET_COLDKEY>
---wallet.hotkey <YOUR_WALLET_HOTKEY>
---netuid 134
---subtensor.network test
---logging.debug
---logging.trace
+python3 neurons/miner.py --wallet.name <YOUR_WALLET_COLDKEY> --wallet.hotkey <YOUR_WALLET_HOTKEY> --netuid 134 --subtensor.network test --logging.debug --logging.trace
 ```
 To run the miner frontend script, follow these steps:
 
@@ -151,28 +160,17 @@ INFO:     Uvicorn running on http://localhost:3001 (Press CTRL+C to quit)
 
 ##### Validating
 
-NOTE - during this testing phase it is suggested you run your validator script in a tmux session.
-tmux is a terminal multiplexer. It lets you switch easily between several programs in one terminal, detach them (they keep running in the background) and reattach them to a different terminal. You can visit the repo [here](https://github.com/tmux/tmux/wiki) and follow the official guides if you require assistance.
+<em> note: during this testing phase it is suggested you run your validator script in a tmux session.
+tmux is a terminal multiplexer. It lets you switch easily between several programs in one terminal, detach them (they keep running in the background) and reattach them to a different terminal. You can visit the repo [here](https://github.com/tmux/tmux/wiki) and follow the official guides if you require assistance. </em>
 
 
 Stake your validator:
 ```
-btcli subnet stake 
---wallet.name <YOUR_WALLET_COLDKEY> 
---wallet.hotkey <YOUR_WALLET_HOTKEY> 
---amount <DESIRED_AMOUNT_OF_TAO> 
---netuid 134
---subtensor.network test
+btcli subnet stake --wallet.name <YOUR_WALLET_COLDKEY> --wallet.hotkey <YOUR_WALLET_HOTKEY> --amount <DESIRED_AMOUNT_OF_TAO> --netuid 134 --subtensor.network test
 ```
 Run the validator:
 ```
-python3 neurons/validator.py 
---wallet.name <YOUR_WALLET_COLDKEY> 
---wallet.hotkey <YOUR_WALLET_HOTKEY> 
---netuid 134 
---subtensor.network test 
---logging.debug
---logging.trace
+python3 neurons/validator.py --wallet.name <YOUR_WALLET_COLDKEY> --wallet.hotkey <YOUR_WALLET_HOTKEY> --netuid 134 --subtensor.network test --logging.debug --logging.trace
 ```
 ---
 
