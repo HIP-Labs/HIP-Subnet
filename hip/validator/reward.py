@@ -1,7 +1,6 @@
 # The MIT License (MIT)
 # Copyright © 2023 Yuma Rao
-# TODO(developer): Set your name
-# Copyright © 2023 <your name>
+# Copyright © 2023 HIP LABS
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
 # documentation files (the “Software”), to deal in the Software without restriction, including without limitation
@@ -64,14 +63,14 @@ def get_rewards(
                 )
                 continue
             else:
-                scores[idx] = 0
+                scores[idx] = 0.1
         elif not response.answer:
-            scores[idx] = 0
+            scores[idx] = 0.1
         elif task.type == "select":
             if not response.answer in task.options:
-                scores[idx] = 0
+                scores[idx] = 0.1
             elif response.dendrite.process_time == None:
-                scores[idx] = 0
+                scores[idx] = 0.1
             elif response.dendrite.process_time >= timeout:  # type: ignore
                 scores[idx] = (
                     0.1  # Give a small reward for a timeout (to keep the miner in the loop for future tasks
@@ -79,21 +78,21 @@ def get_rewards(
             else:
                 # TODO(developer): Define how the validator scores responses.
                 scores[idx] = (
-                    1  # dummy score that will be replaced by the actual scoring logic
+                    1.0  # dummy score that will be replaced by the actual scoring logic
                 )
         elif task.type == "input":
             # check if the answer is of type string
             if not isinstance(response.answer, str):
-                scores[idx] = 0
+                scores[idx] = 0.1
             else:
                 scores[idx] = (
-                    1  # dummy score that will be replaced by the actual scoring logic
+                    1.0  # dummy score that will be replaced by the actual scoring logic
                 )
 
     if task.type == "select":
         answer_counts = {}
         for idx, response in enumerate(responses):
-            if scores[idx] == 1:
+            if scores[idx] == 1.0:
                 if response.answer in answer_counts:
                     answer_counts[response.answer] += 1
                 else:
@@ -103,12 +102,12 @@ def get_rewards(
         if chosen_answer:
             for idx, response in enumerate(responses):
                 if response.answer == chosen_answer:
-                    scores[idx] = 1
+                    scores[idx] += answer_counts[chosen_answer] - 1
                 else:
                     scores[idx] = 0.1
         else:
             for idx, response in enumerate(responses):
-                if scores[idx] == 1:
+                if scores[idx] == 1.0:
                     scores[idx] = 0.1
 
     # Get all the reward results by iteratively calling your reward() function.
