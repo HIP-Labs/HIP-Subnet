@@ -1,8 +1,4 @@
-bittensor==6.11.0
+bittensor==6.9.3
 torch
 loguru
 tinydb
-eth-hash==0.7.0
-eth-keys==0.5.1
-eth-typing==4
-eth-utils==2.3.1
