@@ -116,6 +116,7 @@ setup_gpu
 echo "Running Subtensor Testnet in Docker"
 cd ~ || exit
 
+git clone https://github.com/opentensor/subtensor.git
 cd subtensor || exit
 git checkout main
 sudo ./scripts/run/subtensor.sh -e docker --network testnet --node-type lite
