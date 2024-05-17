@@ -2,3 +2,7 @@ bittensor==6.9.3
 torch
 loguru
 tinydb
+torch
+torchvision
+transformers
+accelerate
