@@ -123,8 +123,8 @@ Miners are presented tasks to complete from the validators through a web interfa
  - Configure the network settings to allow incoming connections to the miner's frontend web application port (port 3001 is the default).
  - If the local network has a firewall or security measures in place, make sure to open the necessary ports or create appropriate firewall rules to allow communication with the miner.
 
-<em> note: during this testing phase it is suggested you run your miner and frontend scripts, in tmux sessions.
-tmux is a terminal multiplexer. It lets you switch easily between several programs in one terminal, detach them (they keep running in the background) and reattach them to a different terminal. You can visit the repo [here](https://github.com/tmux/tmux/wiki) and follow the official guides if you require assistance. </em>
+<em> note: during this testing phase it is suggested you run your validator script in a PM2 session.
+PM2 is a daemon process manager that will help you manage and keep your application online 24/7. You can visit the repo [here]([https://github.com/tmux/tmux/wiki](https://github.com/Unitech/pm2)) and follow the official guides if you require assistance. </em>
 
 
 Run the miner after your keys have been registered: 
@@ -160,8 +160,8 @@ INFO:     Uvicorn running on http://localhost:3001 (Press CTRL+C to quit)
 
 ##### Validating
 
-<em> note: during this testing phase it is suggested you run your validator script in a tmux session.
-tmux is a terminal multiplexer. It lets you switch easily between several programs in one terminal, detach them (they keep running in the background) and reattach them to a different terminal. You can visit the repo [here](https://github.com/tmux/tmux/wiki) and follow the official guides if you require assistance. </em>
+<em> note: during this testing phase it is suggested you run your validator script in a PM2 session.
+PM2 is a daemon process manager that will help you manage and keep your application online 24/7. You can visit the repo [here]([https://github.com/tmux/tmux/wiki](https://github.com/Unitech/pm2)) and follow the official guides if you require assistance. </em>
 
 
 Stake your validator:
