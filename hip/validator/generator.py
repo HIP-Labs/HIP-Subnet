@@ -1,5 +1,5 @@
 from transformers import pipeline
-from words import get_random_words
+from hip.validator.words import get_random_words
 import torch
 import json
 
