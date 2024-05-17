@@ -22,7 +22,7 @@ import bittensor as bt
 from hip.protocol import TaskSynapse
 from hip.validator.reward import get_rewards
 from hip.utils.uids import get_random_uids
-from hip.utils.hip_service import get_task
+from hip.validator.hip_service import get_llm_task
 
 import time
 
@@ -51,8 +51,10 @@ async def forward(self):
     self._last_run_time = time.time()
 
     miner_uids = get_random_uids(self, k=self.config.neuron.sample_size)
-    task = await get_task()
+    task = get_llm_task()
     print(f"Forwarding Task: {task.id} to miners: {miner_uids}")
+    ground_truth = task.answer
+    task.answer = ""
 
     # The dendrite client queries the network.
     responses = await self.dendrite(
@@ -64,6 +66,8 @@ async def forward(self):
         # You are encouraged to define your own deserialization function.
         deserialize=True,
     )
+    task.answer = ground_truth
+
     # Log the results for monitoring purposes.
     bt.logging.info(f"Received responses: {responses}")
     # For each response print the response's id and the response's answer.
