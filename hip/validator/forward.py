@@ -51,7 +51,7 @@ async def forward(self):
     self._last_run_time = time.time()
 
     miner_uids = get_random_uids(self, k=self.config.neuron.sample_size)
-    task = await get_llm_task()
+    task = get_llm_task()
     print(f"Forwarding Task: {task.id} to miners: {miner_uids}")
     ground_truth = task.answer
     task.answer = ""

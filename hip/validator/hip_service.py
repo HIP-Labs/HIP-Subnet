@@ -5,7 +5,7 @@ import uuid
 import bittensor as bt
 
 
-async def get_llm_task() -> TaskSynapse:
+def get_llm_task() -> TaskSynapse:
     bt.logging.info("Generating a new task")
     context = hip.validator.generator.generate_paragraph()
     bt.logging.info(f"Context: {context}")
@@ -53,3 +53,8 @@ async def get_llm_task() -> TaskSynapse:
     else:
         # throw an error
         raise ValueError("Invalid task type")
+
+
+if __name__ == "__main__":
+    task = get_llm_task()
+    print(task)
