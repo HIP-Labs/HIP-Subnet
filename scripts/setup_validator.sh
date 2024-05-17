@@ -58,7 +58,7 @@ setup_hip_subnet() {
     else
         cd HIP-Subnet || exit
         git reset --hard
-        git checkout feat/llm-generation
+        git checkout main
         git pull
         cd ..
     fi
