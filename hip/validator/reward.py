@@ -19,6 +19,8 @@
 import torch
 from typing import List
 from hip.protocol import TaskSynapse
+import random
+import bittensor as bt
 
 
 def find_answer_with_highest_count(data):
@@ -52,64 +54,44 @@ def get_rewards(
     Returns:
     - torch.FloatTensor: A tensor of rewards for the given query and responses.
     """
+    # Randomly choose if the correct answer is the llm generated one from tasksynapse or the most common of the responses
+    useLLMGeneratedAnswer = random.choice([True, False])
     scores: list[float] = [0.0] * len(responses)
-    timeout = self.config.neuron.timeout
-
-    for idx, response in enumerate(responses):
-        if not response.dendrite or response.dendrite.status_code != 200:
-            if response.dendrite and response.dendrite.status_code == 408:
-                scores[idx] = (
-                    0.1  # In case of timeout, give a small reward to keep the miner in the loop for future tasks
-                )
-                continue
-            else:
-                scores[idx] = 0.1
-        elif not response.answer:
-            scores[idx] = 0.1
-        elif task.type == "select":
-            if not response.answer in task.options:
-                scores[idx] = 0.1
-            elif response.dendrite.process_time == None:
-                scores[idx] = 0.1
-            elif response.dendrite.process_time >= timeout:  # type: ignore
-                scores[idx] = (
-                    0.1  # Give a small reward for a timeout (to keep the miner in the loop for future tasks
-                )
-            else:
-                # TODO(developer): Define how the validator scores responses.
-                scores[idx] = (
-                    1.0  # dummy score that will be replaced by the actual scoring logic
-                )
-        elif task.type == "input":
-            # check if the answer is of type string
-            if not isinstance(response.answer, str):
-                scores[idx] = 0.1
-            else:
-                scores[idx] = (
-                    1.0  # dummy score that will be replaced by the actual scoring logic
-                )
-
-    if task.type == "select":
-        answer_counts = {}
+    chosen_answer = None
+    if useLLMGeneratedAnswer:
+        chosen_answer = task.answer
         for idx, response in enumerate(responses):
-            if scores[idx] == 1.0:
+            if response.dendrite and response.dendrite.status_code == 200:
+                if response.answer == task.answer:
+                    scores[idx] = 1.0
+                else:
+                    scores[idx] = 0.1
+    else:
+        for idx, response in enumerate(responses):
+            answer_counts = {}
+            if response.dendrite and response.dendrite.status_code == 200:
                 if response.answer in answer_counts:
                     answer_counts[response.answer] += 1
                 else:
                     answer_counts[response.answer] = 1
-        # Get the answer with the most votes
-        chosen_answer = find_answer_with_highest_count(answer_counts)
-        if chosen_answer:
-            for idx, response in enumerate(responses):
-                if response.answer == chosen_answer:
-                    scores[idx] += answer_counts[chosen_answer] - 1
+            # Get the answer with the most votes
+            chosen_answer = find_answer_with_highest_count(answer_counts)
+            if chosen_answer:
+                if chosen_answer == task.answer:
+                    scores[idx] = 1.0
                 else:
                     scores[idx] = 0.1
-        else:
-            for idx, response in enumerate(responses):
-                if scores[idx] == 1.0:
-                    scores[idx] = 0.1
-
+    bt.logging.info(f"LLM Answer: {task.answer}")
+    bt.logging.info(f"Use LLM Generated Answer: {useLLMGeneratedAnswer}")
+    bt.logging.info(f"Chosen Answer: {chosen_answer}")
+    # log the rewards
+    for idx, response in enumerate(responses):
+        bt.logging.info(
+            f"Rewarding response from {response.axon.hotkey}: {scores[idx]}"  # type: ignore
+        )
+        bt.logging.info(
+            f"Response from {response.axon.hotkey}: {response.answer} Code: {response.dendrite.status_code} Task ID: {response.id}"  # type: ignore
+        )
     # Get all the reward results by iteratively calling your reward() function.
     return torch.FloatTensor(scores).to(  # type: ignore
         self.device
