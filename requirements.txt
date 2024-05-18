@@ -2,6 +2,6 @@ bittensor==6.9.3
 torch
 loguru
 tinydb
-torch --extra-index-url https://download.pytorch.org/whl/cu118
+torch
 transformers
 accelerate
