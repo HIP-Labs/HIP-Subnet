@@ -1,6 +1,8 @@
 # PUBLIC TESTNET UID #134
 
 ---
+Please submit issues and pull requests through this repo as we are within the public testing phase.
+---
 
 # HIP (Human Intelligence Primitive) Subnet
 
@@ -45,23 +47,13 @@ cd HIP-Subnet
 Once inside the HIP-Subnet directory, there are multiple ways to install the subnet.
 ---
 
-### Option 1: The scripted installation
 
-This option creates the enviroment and installs the subnet.
-```
-chmod +x scripts/hip_install.sh
-./scripts/hip_install.sh
-```
-After completing the step above, ensure you activate the enviroment created:
-```
-source venv/bin/activate
-```
-# OR
-
-### Option 2: Manual installation
+### Option 1: Manual installation
 
 create the enviroment and Install the required dependencies with:
 ```
+git clone https://github.com/HIP-Labs/HIP-Subnet.git
+⁠cd ~/HIP-Subnet && source venv/bin/activate
 sudo apt-get update
 sudo apt install python3.10-venv
 python3 -m venv venv
@@ -71,7 +63,7 @@ python3 -m pip install -e .
 
 # OR
 
-#### Option 3: Automated Setup on Ubuntu Server (Recommended for mining)
+#### Option 2: Automated Setup on Ubuntu Server (Recommended for mining)
 
 To set up a miner on an Ubuntu server instance (This works best on AWS), you can use the provided curl command:
 ```
@@ -144,15 +136,15 @@ To run the miner frontend script, follow these steps:
    ./scripts/run_miner_frontend.sh
    ```
 
-  The script will ensure port 3001 is open and start the frontend server. You should see output similar to the following:
+  The script will ensure port 5001 is open and start the frontend server. You should see output similar to the following:
 
 ```
 INFO:     Started server process [PID]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
-INFO:     Uvicorn running on http://localhost:3001 (Press CTRL+C to quit)
+INFO:     Uvicorn running on http://localhost:5001 (Press CTRL+C to quit)
 ```
- - This indicates that the miner's frontend is now running and accessible at http://localhost:3001.
+ - This indicates that the miner's frontend is now running and accessible at http://localhost:5001.
  - You can now access the miner's frontend by opening a web browser and navigating to http://localhost:3001. 
  - To stop the miner's frontend, press CTRL+C in the terminal where the script is running.
 
@@ -160,6 +152,32 @@ INFO:     Uvicorn running on http://localhost:3001 (Press CTRL+C to quit)
 
 ##### Validating
 
+NOTE: <em>An EC2 instance with access to at least 24GB VRAM is currently the recommended requirements for a validator.</em>
+
+Steps:
+1. SSH into your server
+2. ⁠Export the mnemonic for your validator keys:
+```
+export MNEMONIC="[generate a mnemonic to use as validator]"
+```
+3. ⁠⁠Install the validator RUN:
+```
+curl https://raw.githubusercontent.com/HIP-Labs/HIP-Subnet/main/scripts/setup_validator.sh | bash
+```
+4. ⁠⁠Restart the server by running: `sudo reboot`
+5. ⁠⁠ssh again into the server
+6. Spool up the subtensor after reboot:
+```
+⁠⁠cd ~/subtensor; sudo ./scripts/run/subtensor.sh -e docker --network testnet --node-type lite
+```
+7. Change directory back into the HIP-Subnet and activate the enviroment:⁠
+```
+cd ~/HIP-Subnet && source venv/bin/activate
+```   
+8. ⁠Now make sure you gpu is working by running: ⁠
+```
+python -c "import torch; print('CUDA available:', torch.cuda.is_available())"
+```   
 <em> note: during this testing phase it is suggested you run your validator script in a PM2 session.
 PM2 is a daemon process manager that will help you manage and keep your application online 24/7. You can visit the repo [here](https://github.com/Unitech/pm2) and follow the official guides if you require assistance. </em>
 
