@@ -129,7 +129,7 @@ def get_sentiment(text):
 
 
 def generate_caption():
-    [noun, verb, adjective] = get_random_words()
+    [noun, verb, adjective, _] = get_random_words()
     prompt = f"Write a 50 words image caption using the following words: {noun}, {verb}, {adjective}. Caption:"
     outputs = pipe(
         prompt,
