@@ -55,6 +55,11 @@ def get_llm_task() -> TaskSynapse:
         raise ValueError("Invalid task type")
 
 
+def get_image_task():
+    bt.logging.info("Generating a new image task")
+    return ""
+
+
 if __name__ == "__main__":
-    task = get_llm_task()
+    task = get_image_task()
     print(task)

@@ -3,5 +3,7 @@ torch
 loguru
 tinydb
 torch
+torchvision
 transformers
 accelerate
+diffusers
