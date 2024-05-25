@@ -1,5 +1,6 @@
 from diffusers.pipelines.auto_pipeline import AutoPipelineForText2Image
 import torch
+from hip.validator import text_generator
 
 pipeline = AutoPipelineForText2Image.from_pretrained(
     "stabilityai/sdxl-turbo", torch_dtype=torch.float16, variant="fp16"
@@ -12,7 +13,8 @@ def generate_image(prompt):
 
 
 if __name__ == "__main__":
-    prompt = "A beautiful sunset over the ocean"
+    prompt = text_generator.generate_caption()
+    print("Prompt:", prompt)
     image = generate_image(prompt)
-    image.save("image.png")
-    print("Image saved as image.png")
+    image.save("test.png")
+    print("Image saved as test.png")

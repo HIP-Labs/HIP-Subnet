@@ -126,3 +126,17 @@ def get_sentiment(text):
     ]
     output = ["Positive", "Negative", "Neutral"][output_opts.index(max(output_opts))]
     return output
+
+
+def generate_caption():
+    [noun, verb, adjective] = get_random_words()
+    prompt = f"Write a 50 words image caption using the following words: {noun}, {verb}, {adjective}. Caption:"
+    outputs = pipe(
+        prompt,
+        max_new_tokens=1000,
+        do_sample=True,
+        temperature=0.7,
+        top_k=50,
+        top_p=0.95,
+    )
+    return f"{outputs[0]['generated_text']}".replace(prompt, "")  # type: ignore
