@@ -1,5 +1,5 @@
 from hip.protocol import TaskSynapse
-import hip.validator.generator
+from hip.validator import text_generator
 import random
 import uuid
 import bittensor as bt
@@ -7,12 +7,12 @@ import bittensor as bt
 
 def get_llm_task() -> TaskSynapse:
     bt.logging.info("Generating a new task")
-    context = hip.validator.generator.generate_paragraph()
+    context = text_generator.generate_paragraph()
     bt.logging.info(f"Context: {context}")
     taskType = random.choice(["qa", "sentiment_analysis", "summarization"])
     bt.logging.info(f"Task Type: {taskType}")
     if taskType == "qa":
-        task = hip.validator.generator.generate_question_answer(context)
+        task = text_generator.generate_question_answer(context)
         bt.logging.info(f"Task: {task}")
         return TaskSynapse(
             id=str(uuid.uuid4()),
@@ -24,7 +24,7 @@ def get_llm_task() -> TaskSynapse:
             answer=task["options"][task["answer"]],
         )
     elif taskType == "sentiment_analysis":
-        sentiment = hip.validator.generator.get_sentiment(context)
+        sentiment = text_generator.get_sentiment(context)
         bt.logging.info(f"Task: {sentiment}")
         return TaskSynapse(
             id=str(uuid.uuid4()),
@@ -36,7 +36,7 @@ def get_llm_task() -> TaskSynapse:
             answer=sentiment,
         )
     elif taskType == "summarization":
-        summaries = hip.validator.generator.generate_summaries(context)
+        summaries = text_generator.generate_summaries(context)
         shuffledSummaries = summaries.copy()
         bt.logging.info(f"Task: {summaries}")
         random.shuffle(shuffledSummaries)
