@@ -7,8 +7,9 @@ model_name = "HuggingFaceH4/zephyr-7b-beta"
 pipe = pipeline(
     "text-generation",
     model=model_name,
-    torch_dtype=torch.bfloat16,
+    torch_dtype=torch.float16,
     device_map="auto",
+    load_in_8bit=True,  # Enable 8-bit quantization
 )
 
 
