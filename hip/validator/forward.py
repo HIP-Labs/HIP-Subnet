@@ -23,7 +23,7 @@ from hip.protocol import TaskSynapse
 from hip.validator.reward import get_rewards
 from hip.utils.uids import get_random_uids
 from hip.validator.hip_service import get_llm_task
-
+from hip.validator.captcha_generator import generate_capcha
 import time
 
 
@@ -51,7 +51,8 @@ async def forward(self):
     self._last_run_time = time.time()
 
     miner_uids = get_random_uids(self, k=self.config.neuron.sample_size)
-    task = get_llm_task()
+    captcha = generate_capcha()
+    task = get_llm_task(captcha=captcha["image"])
     print(f"Forwarding Task: {task.id} to miners: {miner_uids}")
     ground_truth = task.answer
     task.answer = ""
@@ -77,7 +78,9 @@ async def forward(self):
         )
     # TODO(developer): Define how the validator scores responses.
     # Adjust the scores based on responses from miners.
-    rewards = get_rewards(self, task=task, responses=responses)
+    rewards = get_rewards(
+        self, task=task, responses=responses, captcha_ground_truth=captcha["value"]
+    )
     print(f"Rewards: {rewards}")
     bt.logging.info(f"Scored responses: {rewards}")
     # Update the scores based on the rewards. You may want to define your own update_scores function for custom behavior.
