@@ -9,7 +9,6 @@ pipe = pipeline(
     model=model_name,
     torch_dtype=torch.float16,
     device_map="auto",
-    load_in_8bit=True,  # Enable 8-bit quantization
 )
 
 
