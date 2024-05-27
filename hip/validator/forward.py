@@ -17,9 +17,11 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
+import random
 import bittensor as bt
 
 from hip.protocol import TaskSynapse
+from hip.validator.image_generator import generate_image_task
 from hip.validator.reward import get_rewards
 from hip.utils.uids import get_random_uids
 from hip.validator.hip_service import get_llm_task
@@ -51,7 +53,14 @@ async def forward(self):
     self._last_run_time = time.time()
 
     miner_uids = get_random_uids(self, k=self.config.neuron.sample_size)
-    task = get_llm_task()
+
+    # Decide if image or llm task should be sent
+    task_type = random.choice(["image", "llm"])
+    if task_type == "image":
+        task = generate_image_task()
+    else:
+        task = get_llm_task()
+
     print(f"Forwarding Task: {task.id} to miners: {miner_uids}")
     ground_truth = task.answer
     task.answer = ""

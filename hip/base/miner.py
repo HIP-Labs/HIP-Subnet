@@ -23,7 +23,6 @@ import argparse
 import traceback
 import bittensor as bt
 
-from hip.protocol import TaskSynapse
 from hip.base.neuron import BaseNeuron
 from hip.utils.config import add_miner_args
 from traceback import print_exception

@@ -56,6 +56,11 @@ def get_rewards(
     """
     # Randomly choose if the correct answer is the llm generated one from tasksynapse or the most common of the responses
     useLLMGeneratedAnswer = random.choice([True, False])
+
+    # But if image task, always use the preknown answer
+    if task.image != "":
+        useLLMGeneratedAnswer = True
+
     scores: list[float] = [0.0] * len(responses)
     chosen_answer = None
     if useLLMGeneratedAnswer:

@@ -65,6 +65,14 @@ setup_hip_subnet() {
 }
 
 setup_gpu() {
+    ########################################
+    # GPU setup
+    # TODO: See the following commented script if it is better
+    # sudo apt-get install nvidia-cuda-toolkit
+    # sudo apt-get install ubuntu-drivers-common
+    # sudo ubuntu-drivers autoinstall
+    # sudo reboot
+    ########################################
     echo "Installing NVIDIA drivers"
     sudo apt install nvidia-driver-470 -y
     sudo apt install nvidia-cuda-toolkit -y

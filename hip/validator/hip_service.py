@@ -4,6 +4,8 @@ import random
 import uuid
 import bittensor as bt
 
+from hip.validator.image_generator import generate_image_task
+
 
 def get_llm_task() -> TaskSynapse:
     bt.logging.info("Generating a new task")
@@ -55,9 +57,10 @@ def get_llm_task() -> TaskSynapse:
         raise ValueError("Invalid task type")
 
 
-def get_image_task():
+def get_image_task() -> TaskSynapse:
     bt.logging.info("Generating a new image task")
-    return ""
+    task = generate_image_task()
+    return task
 
 
 if __name__ == "__main__":
