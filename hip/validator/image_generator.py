@@ -4,7 +4,7 @@ from hip.validator import text_generator
 
 pipeline = AutoPipelineForText2Image.from_pretrained(
     "stabilityai/sdxl-turbo", torch_dtype=torch.float16, variant="fp16"
-).to("cuda")
+).to("cuda:1")
 
 
 def generate_image(prompt):

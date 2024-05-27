@@ -8,7 +8,7 @@ pipe = pipeline(
     "text-generation",
     model=model_name,
     torch_dtype=torch.float16,
-    device_map="auto",
+    device_map="cuda:0",
 )
 
 
