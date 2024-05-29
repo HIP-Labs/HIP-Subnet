@@ -14,7 +14,7 @@ pipeline = AutoPipelineForText2Image.from_pretrained(
 ).to("cuda:1")
 
 
-def generate_image_task() -> TaskSynapse:
+def generate_image_task(captcha: str) -> TaskSynapse:
     """
     Generates an image based on the prompt
     @param prompt: The prompt to generate the image
@@ -45,8 +45,10 @@ def generate_image_task() -> TaskSynapse:
         value="",
         image=image_base64,
         answer=answer,
+        captcha=captcha,
+        captchaValue="",
     )
 
 
 if __name__ == "__main__":
-    task = generate_image_task()
+    task = generate_image_task(captcha="captcha")

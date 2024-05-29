@@ -63,12 +63,12 @@ def get_llm_task(captcha: str) -> TaskSynapse:
         raise ValueError("Invalid task type")
 
 
-def get_image_task() -> TaskSynapse:
+def get_image_task(captcha: str) -> TaskSynapse:
     bt.logging.info("Generating a new image task")
-    task = generate_image_task()
+    task = generate_image_task(captcha)
     return task
 
 
 if __name__ == "__main__":
-    task = get_image_task()
+    task = get_image_task(captcha="captcha")
     print(task)
