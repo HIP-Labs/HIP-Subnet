@@ -88,7 +88,7 @@ async def forward(self):
     # TODO(developer): Define how the validator scores responses.
     # Adjust the scores based on responses from miners.
     rewards = get_rewards(
-        self, task=task, responses=responses, captcha_ground_truth=captcha["value"]
+        self, task=task, responses=responses, captcha_ground_truth=captcha["text"]
     )
     print(f"Rewards: {rewards}")
     bt.logging.info(f"Scored responses: {rewards}")
