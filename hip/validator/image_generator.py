@@ -30,13 +30,13 @@ def generate_image_task(captcha: str) -> TaskSynapse:
         choices = get_random_objects()
         label = label.replace("[replace]", "object")
     answer = f"{random.choice(choices)}"
-    image: BytesIO = pipeline(
-        prompt=answer, guidance_scale=0.0, num_inference_steps=1
-    ).images[0]
-    image_base64 = "data:image/png;base64," + base64.b64encode(image.getvalue()).decode(
-        "utf-8"
-    )
-
+    image = pipeline(prompt=answer, guidance_scale=0.0, num_inference_steps=1).images[0]
+    buffer = BytesIO()
+    image.save(buffer, format="PNG")
+    buffer.seek(0)
+    image_base64 = base64.b64encode(buffer.getvalue()).decode("utf-8")
+    # Append the data type
+    image_base64 = f"data:image/png;base64,{image_base64}"
     return TaskSynapse(
         id=str(uuid.uuid4()),
         label=label,
