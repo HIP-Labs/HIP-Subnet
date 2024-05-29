@@ -6,6 +6,7 @@ torch
 torchvision
 transformers
 accelerate
+captcha
 diffusers
 captcha
 bitsandbytes

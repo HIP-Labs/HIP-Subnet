@@ -7,7 +7,7 @@ import bittensor as bt
 from hip.validator.image_generator import generate_image_task
 
 
-def get_llm_task() -> TaskSynapse:
+def get_llm_task(captcha: str) -> TaskSynapse:
     bt.logging.info("Generating a new task")
     context = text_generator.generate_paragraph()
     bt.logging.info(f"Context: {context}")
@@ -24,6 +24,8 @@ def get_llm_task() -> TaskSynapse:
             value=context,
             image="",
             answer=task["options"][task["answer"]],
+            captcha=captcha,
+            captchaValue="",
         )
     elif taskType == "sentiment_analysis":
         sentiment = text_generator.get_sentiment(context)
@@ -36,6 +38,8 @@ def get_llm_task() -> TaskSynapse:
             value=context,
             image="",
             answer=sentiment,
+            captcha=captcha,
+            captchaValue="",
         )
     elif taskType == "summarization":
         summaries = text_generator.generate_summaries(context)
@@ -51,6 +55,8 @@ def get_llm_task() -> TaskSynapse:
             value=context,
             image="",
             answer=summaries[0],
+            captcha=captcha,
+            captchaValue="",
         )
     else:
         # throw an error
