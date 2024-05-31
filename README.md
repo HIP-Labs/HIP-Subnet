@@ -1,7 +1,7 @@
-# PUBLIC TESTNET UID #134
+# Bittensor Subnet  #36
 
 ---
-Please submit issues and pull requests through this repo as we are within the public testing phase.
+Please submit issues and pull requests through this repo.
 ---
 
 # HIP (Human Intelligence Primitive) Subnet
@@ -115,7 +115,7 @@ Miners are presented tasks to complete from the validators through a web interfa
  - Configure the network settings to allow incoming connections to the miner's frontend web application port (port 3001 is the default).
  - If the local network has a firewall or security measures in place, make sure to open the necessary ports or create appropriate firewall rules to allow communication with the miner.
 
-<em> note: during this testing phase it is suggested you run your miner script in a PM2 session.
+<em> note: It is suggested you run your miner script in a PM2 session.
 PM2 is a daemon process manager that will help you manage and keep your application online 24/7. You can visit the repo [here](https://github.com/Unitech/pm2) and follow the official guides if you require assistance. </em>
 
 
@@ -178,7 +178,7 @@ cd ~/HIP-Subnet && source venv/bin/activate
 ```
 python -c "import torch; print('CUDA available:', torch.cuda.is_available())"
 ```   
-<em> note: during this testing phase it is suggested you run your validator script in a PM2 session.
+<em> note: It is suggested you run your validator script in a PM2 session.
 PM2 is a daemon process manager that will help you manage and keep your application online 24/7. You can visit the repo [here](https://github.com/Unitech/pm2) and follow the official guides if you require assistance. </em>
 
 
