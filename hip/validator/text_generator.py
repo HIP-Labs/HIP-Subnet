@@ -7,8 +7,8 @@ model_name = "HuggingFaceH4/zephyr-7b-beta"
 pipe = pipeline(
     "text-generation",
     model=model_name,
-    torch_dtype=torch.bfloat16,
-    device_map="auto",
+    torch_dtype=torch.float16,
+    device_map="cuda:0",
 )
 
 
@@ -126,3 +126,17 @@ def get_sentiment(text):
     ]
     output = ["Positive", "Negative", "Neutral"][output_opts.index(max(output_opts))]
     return output
+
+
+def generate_caption():
+    [noun, verb, adjective, _] = get_random_words()
+    prompt = f"Write a 50 words image caption using the following words: {noun}, {verb}, {adjective}. \n Example:\nPeople standing at the time square.\nCaption:"
+    outputs = pipe(
+        prompt,
+        max_new_tokens=1000,
+        do_sample=True,
+        temperature=0.7,
+        top_k=50,
+        top_p=0.95,
+    )
+    return f"{outputs[0]['generated_text']}".replace(prompt, "")  # type: ignore

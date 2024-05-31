@@ -1,18 +1,20 @@
 from hip.protocol import TaskSynapse
-import hip.validator.generator
+from hip.validator import text_generator
 import random
 import uuid
 import bittensor as bt
 
+from hip.validator.image_generator import generate_image_task
 
-def get_llm_task() -> TaskSynapse:
+
+def get_llm_task(captcha: str) -> TaskSynapse:
     bt.logging.info("Generating a new task")
-    context = hip.validator.generator.generate_paragraph()
+    context = text_generator.generate_paragraph()
     bt.logging.info(f"Context: {context}")
     taskType = random.choice(["qa", "sentiment_analysis", "summarization"])
     bt.logging.info(f"Task Type: {taskType}")
     if taskType == "qa":
-        task = hip.validator.generator.generate_question_answer(context)
+        task = text_generator.generate_question_answer(context)
         bt.logging.info(f"Task: {task}")
         return TaskSynapse(
             id=str(uuid.uuid4()),
@@ -22,9 +24,11 @@ def get_llm_task() -> TaskSynapse:
             value=context,
             image="",
             answer=task["options"][task["answer"]],
+            captcha=captcha,
+            captchaValue="",
         )
     elif taskType == "sentiment_analysis":
-        sentiment = hip.validator.generator.get_sentiment(context)
+        sentiment = text_generator.get_sentiment(context)
         bt.logging.info(f"Task: {sentiment}")
         return TaskSynapse(
             id=str(uuid.uuid4()),
@@ -34,9 +38,11 @@ def get_llm_task() -> TaskSynapse:
             value=context,
             image="",
             answer=sentiment,
+            captcha=captcha,
+            captchaValue="",
         )
     elif taskType == "summarization":
-        summaries = hip.validator.generator.generate_summaries(context)
+        summaries = text_generator.generate_summaries(context)
         shuffledSummaries = summaries.copy()
         bt.logging.info(f"Task: {summaries}")
         random.shuffle(shuffledSummaries)
@@ -49,12 +55,20 @@ def get_llm_task() -> TaskSynapse:
             value=context,
             image="",
             answer=summaries[0],
+            captcha=captcha,
+            captchaValue="",
         )
     else:
         # throw an error
         raise ValueError("Invalid task type")
 
 
+def get_image_task(captcha: str) -> TaskSynapse:
+    bt.logging.info("Generating a new image task")
+    task = generate_image_task(captcha)
+    return task
+
+
 if __name__ == "__main__":
-    task = get_llm_task()
+    task = get_image_task(captcha="captcha")
     print(task)

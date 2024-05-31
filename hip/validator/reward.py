@@ -43,6 +43,7 @@ def get_rewards(
     self,
     task: TaskSynapse,
     responses: List[TaskSynapse],
+    captcha_ground_truth: str,
 ) -> torch.FloatTensor:
     """
     Returns a tensor of rewards for the given task and responses.
@@ -56,16 +57,24 @@ def get_rewards(
     """
     # Randomly choose if the correct answer is the llm generated one from tasksynapse or the most common of the responses
     useLLMGeneratedAnswer = random.choice([True, False])
+
+    # But if image task, always use the preknown answer
+    if task.image != "":
+        useLLMGeneratedAnswer = True
+
     scores: list[float] = [0.0] * len(responses)
     chosen_answer = None
     if useLLMGeneratedAnswer:
         chosen_answer = task.answer
         for idx, response in enumerate(responses):
             if response.dendrite and response.dendrite.status_code == 200:
-                if response.answer == task.answer:
-                    scores[idx] = 1.0
+                if response.captchaValue == captcha_ground_truth:
+                    if response.answer == task.answer:
+                        scores[idx] = 1.0
+                    else:
+                        scores[idx] = 0.1
                 else:
-                    scores[idx] = 0.1
+                    scores[idx] = 0.0
     else:
         for idx, response in enumerate(responses):
             answer_counts = {}
@@ -74,13 +83,20 @@ def get_rewards(
                     answer_counts[response.answer] += 1
                 else:
                     answer_counts[response.answer] = 1
-            # Get the answer with the most votes
-            chosen_answer = find_answer_with_highest_count(answer_counts)
-            if chosen_answer:
-                if chosen_answer == task.answer:
-                    scores[idx] = 1.0
-                else:
-                    scores[idx] = 0.1
+        # Get the answer with the most votes
+        chosen_answer = find_answer_with_highest_count(answer_counts)
+        for idx, response in enumerate(responses):
+            if response.dendrite and response.dendrite.status_code == 200:
+                if chosen_answer:
+                    if response.captchaValue == captcha_ground_truth:
+                        if chosen_answer == task.answer:
+                            scores[idx] = 1.0
+                        else:
+                            scores[idx] = 0.1
+                    else:
+                        scores[idx] = 0.0
+            else:
+                scores[idx] = 0.0
     bt.logging.info(f"LLM Answer: {task.answer}")
     bt.logging.info(f"Use LLM Generated Answer: {useLLMGeneratedAnswer}")
     bt.logging.info(f"Chosen Answer: {chosen_answer}")

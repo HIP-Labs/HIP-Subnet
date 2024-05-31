@@ -72,6 +72,7 @@ class Miner(BaseMinerNeuron):
             "value": synapse.value,
             "image": synapse.image,
             "answer": "",
+            "captcha": synapse.captcha,
             "expiry": int(time.time() + (synapse.timeout or 0)),
         }
         self.tasks_db.insert(task)
@@ -81,7 +82,6 @@ class Miner(BaseMinerNeuron):
         answered = False
         print(f"Waiting for the task: {task['id']} to be answered")
         print(f"Timeout for the task: {task['id']} is {synapse.timeout} seconds")
-        # TODO: Commented out the timeout reconfigure it
         if synapse.timeout:
             timeout = synapse.timeout
         while time.time() - start_time < timeout:
@@ -104,6 +104,7 @@ class Miner(BaseMinerNeuron):
             print(f"Task: {task['id']} answered within the timeout")
             answer = self.answers_db.search(where("id") == synapse.id)[0]
             synapse.answer = answer["answer"]
+            synapse.captchaValue = f'{answer["captchaValue"]}'.capitalize()
             self.answers_db.remove(where("id") == synapse.id)
             print(f"For the task: {synapse.id} the answer is: {synapse.answer}")
             return synapse

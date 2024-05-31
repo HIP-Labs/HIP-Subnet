@@ -148,6 +148,13 @@ class TaskSynapse(bt.Synapse):
         allow_mutation=False,
     )
 
+    captcha: str = pydantic.Field(
+        ...,
+        title="Captcha",
+        description="A base64 image string of the captcha image.",
+        allow_mutation=False,
+    )
+
     image: str = pydantic.Field(
         ...,
         title="Image",
@@ -161,9 +168,15 @@ class TaskSynapse(bt.Synapse):
         description="A string that captures the answer to the task.",
     )
 
+    captchaValue: str = pydantic.Field(
+        "",
+        title="Captcha Value",
+        description="The value of the captcha.",
+    )
+
     #  required_hash_fields is the list of fields that are required for the hash for the request body.
     required_hash_fields: List[str] = pydantic.Field(
-        ["id", "label", "type", "options", "value", "image"],
+        ["id", "label", "type", "options", "value", "image", "captcha"],
         title="Required Hash Fields",
         description="A list of fields that are required for the hash.",
         allow_mutation=False,
