@@ -5,7 +5,7 @@ import base64
 
 
 def generate_random_string(length=5):
-    return "".join(random.choices("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ", k=length))
+    return "".join(random.choices("12346789ABCDEFGHIJKLMNPQRTUVWXYZ", k=length))
 
 
 def generate_capcha() -> dict[str, str]:
