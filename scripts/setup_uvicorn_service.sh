@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Get the current user's username and home directory
+USER=$(whoami)
+HOME_DIR=$(eval echo ~$USER)
+
 # Define the service unit file path
 SERVICE_FILE="/etc/systemd/system/uvicorn_frontend.service"
 
@@ -9,10 +13,10 @@ Description=UVicorn Frontend Service
 After=network.target
 
 [Service]
-User=ubuntu
-Group=ubuntu
-WorkingDirectory=/home/ubuntu/HIP-Subnet
-ExecStart=/home/ubuntu/HIP-Subnet/venv/bin/uvicorn frontend:app --host 0.0.0.0 --port 5001
+User=$USER
+Group=$USER
+WorkingDirectory=$HOME_DIR/HIP-Subnet
+ExecStart=$HOME_DIR/HIP-Subnet/venv/bin/uvicorn frontend:app --host 0.0.0.0 --port 5001
 Restart=always
 
 [Install]
