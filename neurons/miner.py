@@ -102,11 +102,13 @@ class Miner(BaseMinerNeuron):
             return synapse
         else:
             print(f"Task: {task['id']} answered within the timeout")
+            print(
+                f"For the task: {synapse.id} the answer is: {synapse.answer} and captchaValue is: {answer['captchaValue']}"
+            )
             answer = self.answers_db.search(where("id") == synapse.id)[0]
             synapse.answer = answer["answer"]
             synapse.captchaValue = f'{answer["captchaValue"]}'.capitalize()
             self.answers_db.remove(where("id") == synapse.id)
-            print(f"For the task: {synapse.id} the answer is: {synapse.answer}")
             return synapse
 
     # TODO: Check if the blacklist function is correct
