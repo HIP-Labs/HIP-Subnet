@@ -30,6 +30,7 @@ if enable_cors:
 
 class Answer(BaseModel):
     answer: str = Field(..., title="The answer to the question")
+    captchaValue: str = Field(..., title="The captcha value")
     id: str = Field(..., title="The id of the question")
 
 
@@ -64,7 +65,10 @@ async def post_answer(answer: Answer):
         return JSONResponse(
             content={"status": "error", "message": "Answer already exists"}
         )
-
+    if not answer.captchaValue or answer.captchaValue == "":
+        return JSONResponse(
+            content={"status": "error", "message": "Captcha value is empty"}
+        )
     answers_db.insert(answer.dict())
     tasks_db.remove(where("id") == answer.id)
     return JSONResponse(content={"status": "ok"})

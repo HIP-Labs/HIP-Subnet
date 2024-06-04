@@ -26,7 +26,9 @@ def check_updates() -> bool:
     current_version_spec = generate_spec_version(current_version)
     print(f"Latest version: {latest_version}")
     print(f"Current version: {current_version}")
-    if latest_version_spec > current_version_spec:
+    # check if the latest version is greater than the current version
+    # Only check the major and minor version numbers not the patch version
+    if latest_version_spec // 100 > current_version_spec // 100:
         return True
     else:
         return False
