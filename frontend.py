@@ -65,7 +65,10 @@ async def post_answer(answer: Answer):
         return JSONResponse(
             content={"status": "error", "message": "Answer already exists"}
         )
-
+    if not answer.captchaValue or answer.captchaValue == "":
+        return JSONResponse(
+            content={"status": "error", "message": "Captcha value is empty"}
+        )
     answers_db.insert(answer.dict())
     tasks_db.remove(where("id") == answer.id)
     return JSONResponse(content={"status": "ok"})
