@@ -102,9 +102,8 @@ class Miner(BaseMinerNeuron):
             return synapse
         else:
             print(f"Task: {task['id']} answered within the timeout")
-            print(
-                f"For the task: {synapse.id} the answer is: {synapse.answer} and captchaValue is: {answer['captchaValue']}"
-            )
+            print(f"For the task: {task['id']} the answer is:")
+            print(answer)
             answer = self.answers_db.search(where("id") == synapse.id)[0]
             synapse.answer = answer["answer"]
             synapse.captchaValue = f'{answer["captchaValue"]}'.capitalize()
