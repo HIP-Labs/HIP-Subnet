@@ -6,18 +6,45 @@ Please submit issues and pull requests through this repo.
 
 # HIP (Human Intelligence Primitive) Subnet
 
-> The HIP (Human Intelligence Primitive) Subnet is a [Bittensor](https://github.com/opentensor/bittensor) subnet designed to provide human intelligence services to other subnets. It will allow other subnets to send their data to the HIP Subnet for human evaluation, testing, and feedback. The HIP Subnet harnesses the collective intelligence of human miners who compete to provide high-quality evaluations and insights on the submitted data. Validators in the HIP Subnet assess the quality of the miners' responses and distribute rewards accordingly, creating an incentive mechanism that promotes diverse and valuable human feedback.
+---
 
+> The HIP (Human Intelligence Primitive) Subnet is a [Bittensor](https://github.com/opentensor/bittensor) subnet designed to provide human intelligence services to other subnets. It will allow other subnets to send their data to the HIP Subnet for human evaluation, testing, and feedback. The HIP Subnet harnesses the collective intelligence of human miners who compete to provide high-quality evaluations and insights on the submitted data. Validators in the HIP Subnet assess the quality of the miners' responses and distribute rewards accordingly, creating an incentive mechanism that promotes diverse and valuable human feedback.
 
 ## Features
 
- ##### Human Intelligence Primitives: 
+##### Human Intelligence Primitives:
+
  > The HIP Subnet leverages human intelligence to perform tasks that require subjective judgment, contextual understanding, and creative problem-solving. Miners in the HIP Subnet are human participants who contribute their cognitive abilities to evaluate and provide feedback on data submitted by other subnets.
 
 
- ##### Incentive Mechanism: 
+##### Incentive Mechanism:
+
  > The HIP Subnet implements an incentive mechanism that rewards miners for providing high-quality evaluations and feedback. Miners compete to offer the most valuable insights, and the subnet's validators distribute rewards based on the quality and human-likeness of the miners' responses. This incentive structure encourages miners to deliver their best work and continuously improve the networks overall performance.
 
+```
+The current reward model works as follows:
+
+1. The validator generates a task, which can be either an image-based task or a text-based task (LLM task).
+2. The task is sent to the miners along with a captcha.
+3. Miners provide their answers to the task and the captcha.
+4. The validator collects the responses from the miners.
+5. The validator calculates the rewards for each miner based on the following criteria:
+   - If the miner's captcha answer matches the true captcha, their response is considered valid.
+   - If the miner's response is valid and their task answer matches the correct answer (determined by either the LLM-generated answer or the most common answer among the miners), they receive a reward of 1.0.
+   - If the miner's response is valid but their task answer is incorrect, they receive a reward of 0.1.
+   - If the miner's captcha answer is incorrect, their response is considered invalid, and they receive a reward of 0.0 regardless of their task answer.
+6. The validator updates the scores of the miners based on the calculated rewards.
+```
+
+>When a miner submits a valid response (correct captcha and task answer), they receive the highest reward. If their response is valid but the task answer is incorrect, they receive a lower reward.
+---
+>Miners who consistently provide correct answers will accumulate higher total rewards over time compared to miners who don't respond or provide incorrect answers.
+---
+>The validator updates the scores of the miners based on the rewards they earn for each task. These scores are used to determine the overall performance and ranking of the miners.
+---
+>As more miners start actively participating and providing correct answers, the relative rewards of the inactive or underperforming miners will decrease. This is because the active miners will be earning higher rewards, while the inactive miners will not be accumulating rewards at the same rate.
+---
+>Consequently, the scores of the active and accurate miners will increase, while the scores of the inactive or inaccurate miners will relatively decrease or stagnate.
 
 ---
 
@@ -31,12 +58,15 @@ To participate in the HIP Subnet as a miner or validator, follow these steps:
 
 # Mining
 
-Mining in the HIP Subnet is designed to be straightforward. Follow these steps to set up and run your miner on an Ubuntu server.
+Mining in the HIP Subnet is designed to be straightforward. Follow these steps to set up and run your miner on an Ubuntu server. We have also included a guide on how to get set up on DigitalOcean below. 
+
+[Setting up on DigitalOcean](https://github.com/HIP-Labs/HIP-Developer-Docs/blob/main/Guides/Miner/Setting_up_on_DigitalOcean.md)
+
 
 ## Prerequisites
 
 - Python 3.8 or higher
-- A Bittensor wallet with sufficient TAO for staking and registration
+- A Bittensor wallet with sufficient TAO for registration
 - 2X VCPU
 - 8GB RAM
 - 100GB SSD
@@ -132,13 +162,15 @@ For further assistance, refer to the [PM2 documentation](https://github.com/Unit
 
 ---
 
-# Validator
+# Validating
 
 Setting up a HIP validator involves configuring a server with specific hardware requirements. Follow these steps to set up and run your validator on an Ubuntu server.
 
+We have made a short guide on how to set up your validator using runpod here: [Setting up on RunPod](https://github.com/HIP-Labs/HIP-Developer-Docs/blob/main/Guides/Validator/Setting_up_on_RunPod.md)
+
 ## Prerequisites
 
-- 2x NVIDIA RTX 3090
+- 2x NVIDIA Cards with at least 20GB VRAM each. *eg. 2 * RTX 3090.*
 - 8X VCPU
 - 32GB RAM
 - 200GB NVMe
