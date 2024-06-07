@@ -10,3 +10,4 @@ captcha
 diffusers
 captcha
 bitsandbytes
+tabulate
