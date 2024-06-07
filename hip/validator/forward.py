@@ -135,7 +135,7 @@ async def forward(self):
                 "Captcha Match",
                 "Answer Match",
                 "Captcha Text",
-                "Selected Option",
+                "Selected Answer",
                 "Reward n/1",
             ],
         )
