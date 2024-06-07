@@ -124,13 +124,15 @@ async def forward(self):
         printRecords.append(
             [
                 f"{miner_uids[i]}",  # Miner UID
-                f"{responses[i].axon.hotkey}",  # Miner Hotkey
+                responses[i].axon.hotkey,  # Miner Hotkey
                 f"{responses[i].axon.ip}:{responses[i].axon.port}",  # Miner IP:Port
-                f"{responses[i].dendrite.status_code}",  # Status Code of the response
-                f"{responses[i].captchaValue == captcha["text"]}", # Does the captcha match the ground truth
-                f"{responses[i].answer == ground_truth}",  # Does the response match the ground truth
-                f"{responses[i].captchaValue}", # Captcha Text
-                f"{responses[i].answer[0:50]}",  # Selected Answer
+                responses[i].dendrite.status_code,  # Status Code of the response
+                responses[i].captchaValue
+                == captcha["text"],  # Does the captcha match the ground truth
+                responses[i].answer
+                == ground_truth,  # Does the response match the ground truth
+                responses[i].captchaValue,  # Captcha Text
+                responses[i].answer[0:50],  # Selected Answer
                 f"{rewards[i]}",  # Reward
             ]
         )
