@@ -67,7 +67,19 @@ async def forward(self):
     bt.logging.debug(f"Task: {task.id} - Generated task type: {task_type}")
     ground_truth = task.answer
     task.answer = ""
-    bt.logging.debug(f"Task: {task.id} - Generated task:", task.to_dict())
+    task_to_print = task.to_dict()
+    # replace image and captcha entries with true or false
+    task_to_print["image"] = (
+        "True" if task_to_print["image"] and task_to_print["image"] != "" else "False"
+    )
+    task_to_print["captcha"] = (
+        "True"
+        if task_to_print["captcha"] and task_to_print["captcha"] != ""
+        else "False"
+    )
+    bt.logging.debug(
+        f"Task: {task.id} - Generated task: {task_to_print}",
+    )
     bt.logging.debug(f"Task: {task.id} - Ground truth: {ground_truth}")
     bt.logging.debug(f"Task: {task.id} - Captcha: {captcha['text']}")
 
