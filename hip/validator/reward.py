@@ -39,6 +39,15 @@ def find_answer_with_highest_count(data):
     return max_answer
 
 
+def captcha_match(captcha_ground_truth: str, captchaValue: str) -> bool:
+    # convert both to uppercase and remove all non alphanumeric characters
+    captcha_ground_truth = "".join(
+        [c.upper() for c in captcha_ground_truth if c.isalnum()]
+    )
+    response_captcha = "".join([c.upper() for c in captchaValue if c.isalnum()])
+    return captcha_ground_truth == response_captcha
+
+
 def get_rewards(
     self,
     task: TaskSynapse,
@@ -67,18 +76,18 @@ def get_rewards(
     if useLLMGeneratedAnswer:
         chosen_answer = task.answer
         for idx, response in enumerate(responses):
-            if response.dendrite and response.dendrite.status_code == 200:
-                if response.captchaValue == captcha_ground_truth:
-                    if response.answer == task.answer:
-                        scores[idx] = 1.0
-                    else:
-                        scores[idx] = 0.1
+            if captcha_match(captcha_ground_truth, response.captchaValue):
+                if response.answer == task.answer:
+                    scores[idx] = 1.0
                 else:
-                    scores[idx] = 0.0
+                    scores[idx] = 0.1
+            else:
+                scores[idx] = 0.0
     else:
         for idx, response in enumerate(responses):
-            answer_counts = {}
-            if response.dendrite and response.dendrite.status_code == 200:
+            # only consider if the captcha is correct
+            if captcha_match(captcha_ground_truth, response.captchaValue):
+                answer_counts = {}
                 if response.answer in answer_counts:
                     answer_counts[response.answer] += 1
                 else:
@@ -86,9 +95,9 @@ def get_rewards(
         # Get the answer with the most votes
         chosen_answer = find_answer_with_highest_count(answer_counts)
         for idx, response in enumerate(responses):
-            if response.dendrite and response.dendrite.status_code == 200:
+            if response.axon and response.axon.status_code == 200:
                 if chosen_answer:
-                    if response.captchaValue == captcha_ground_truth:
+                    if captcha_match(captcha_ground_truth, response.captchaValue):
                         if chosen_answer == task.answer:
                             scores[idx] = 1.0
                         else:
