@@ -107,37 +107,37 @@ async def forward(self):
     rewards = get_rewards(
         self, task=task, responses=responses, captcha_ground_truth=captcha["text"]
     )
-    printRecords = []
+    printRecords = [
+        [
+            "UID",
+            "Hotkey",
+            "IP:Port",
+            "Status Code",
+            "Captcha Match",
+            "Answer Match",
+            "Captcha Text",
+            "Selected Answer",
+            "Reward n/1",
+        ]
+    ]
     for i in range(len(responses)):
         printRecords.append(
             [
-                miner_uids[i],  # Miner UID
-                responses[i].axon.hotkey,  # Miner Hotkey
+                f"{miner_uids[i]}",  # Miner UID
+                f"{responses[i].axon.hotkey}",  # Miner Hotkey
                 f"{responses[i].axon.ip}:{responses[i].axon.port}",  # Miner IP:Port
-                responses[i].dendrite.status_code,  # Status Code of the response
-                # Does the captcha match the ground truth
-                responses[i].captchaValue == captcha["text"],
-                responses[i].answer
-                == ground_truth,  # Does the response match the ground truth
-                responses[i].answer[:30],  # Selected Option (First 30 characters)
-                rewards[i],  # Reward
+                f"{responses[i].dendrite.status_code}",  # Status Code of the response
+                f"{responses[i].captchaValue == captcha["text"]}", # Does the captcha match the ground truth
+                f"{responses[i].answer == ground_truth}",  # Does the response match the ground truth
+                f"{responses[i].captchaValue}", # Captcha Text
+                f"{responses[i].answer[0:50]}",  # Selected Answer
+                f"{rewards[i]}",  # Reward
             ]
         )
 
     print(
         tabulate(
             printRecords,
-            headers=[
-                "UID",
-                "Hotkey",
-                "IP:Port",
-                "Status",
-                "Captcha Match",
-                "Answer Match",
-                "Captcha Text",
-                "Selected Answer",
-                "Reward n/1",
-            ],
         )
     )
     # Update the scores based on the rewards. You may want to define your own update_scores function for custom behavior.
