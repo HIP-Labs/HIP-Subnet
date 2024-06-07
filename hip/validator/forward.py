@@ -19,6 +19,7 @@
 
 import random
 import bittensor as bt
+from tabulate import tabulate
 
 from hip.protocol import TaskSynapse
 from hip.validator.image_generator import generate_image_task
@@ -52,6 +53,7 @@ async def forward(self):
         return
     self._last_run_time = time.time()
 
+    bt.logging.debug("Forwarding task to miners")
     miner_uids = get_random_uids(self, k=self.config.neuron.sample_size)
     captcha = generate_capcha()
 
@@ -62,10 +64,17 @@ async def forward(self):
     else:
         task = get_llm_task(captcha=captcha["image"])
 
-    print(f"Forwarding Task: {task.id} to miners: {miner_uids}")
+    bt.logging.debug(f"Task: {task.id} - Generated task type: {task_type}")
     ground_truth = task.answer
     task.answer = ""
+    bt.logging.debug(f"Task: {task.id} - Generated task:", task.to_dict())
+    bt.logging.debug(f"Task: {task.id} - Ground truth: {ground_truth}")
+    bt.logging.debug(f"Task: {task.id} - Captcha: {captcha['text']}")
 
+    bt.logging.debug(
+        f"Task: {task.id} - Sending task to miners with timeout {self.config.neuron.timeout}"
+    )
+    bt.logging.debug(f"Task: {task.id} - Chosen Miner IDs: {miner_uids}")
     # The dendrite client queries the network.
     responses = await self.dendrite(
         # Send the query to selected miner axons in the network.
@@ -81,16 +90,43 @@ async def forward(self):
     # Log the results for monitoring purposes.
     # bt.logging.info(f"Received responses: {responses}")
     # For each response print the response's id and the response's answer.
-    for response in responses:
-        print(
-            f"Response from {response.axon.hotkey}: {response.answer} Code: {response.dendrite.status_code} Message: {response.dendrite.status_message} Task ID: {response.id}"
-        )
     # TODO(developer): Define how the validator scores responses.
     # Adjust the scores based on responses from miners.
     rewards = get_rewards(
         self, task=task, responses=responses, captcha_ground_truth=captcha["text"]
     )
-    print(f"Rewards: {rewards}")
-    bt.logging.info(f"Scored responses: {rewards}")
+    printRecords = []
+    for i in range(len(responses)):
+        printRecords.append(
+            [
+                miner_uids[i],  # Miner UID
+                responses[i].axon.hotkey,  # Miner Hotkey
+                f"{responses[i].axon.ip}:{responses[i].axon.port}",  # Miner IP:Port
+                responses[i].dendrite.status_code,  # Status Code of the response
+                # Does the captcha match the ground truth
+                responses[i].captchaValue == captcha["text"],
+                responses[i].answer
+                == ground_truth,  # Does the response match the ground truth
+                responses[i].answer[:30],  # Selected Option (First 30 characters)
+                rewards[i],  # Reward
+            ]
+        )
+
+    print(
+        tabulate(
+            printRecords,
+            headers=[
+                "UID",
+                "Hotkey",
+                "IP:Port",
+                "Status",
+                "Captcha Match",
+                "Answer Match",
+                "Captcha Text",
+                "Selected Option",
+                "Reward n/1",
+            ],
+        )
+    )
     # Update the scores based on the rewards. You may want to define your own update_scores function for custom behavior.
     self.update_scores(rewards, miner_uids)

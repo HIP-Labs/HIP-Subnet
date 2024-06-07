@@ -97,17 +97,10 @@ def get_rewards(
                         scores[idx] = 0.0
             else:
                 scores[idx] = 0.0
-    bt.logging.info(f"LLM Answer: {task.answer}")
     bt.logging.info(f"Use LLM Generated Answer: {useLLMGeneratedAnswer}")
-    bt.logging.info(f"Chosen Answer: {chosen_answer}")
-    # log the rewards
-    for idx, response in enumerate(responses):
-        bt.logging.info(
-            f"Rewarding response from {response.axon.hotkey}: {scores[idx]}"  # type: ignore
-        )
-        bt.logging.info(
-            f"Response from {response.axon.hotkey}: {response.answer} Code: {response.dendrite.status_code} Task ID: {response.id}"  # type: ignore
-        )
+    if not useLLMGeneratedAnswer:
+        bt.logging.info(f"Chosen Answer: {chosen_answer}")
+
     # Get all the reward results by iteratively calling your reward() function.
     return torch.FloatTensor(scores).to(  # type: ignore
         self.device
