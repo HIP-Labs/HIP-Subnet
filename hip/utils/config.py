@@ -172,7 +172,7 @@ def add_validator_args(cls, parser):
         "--neuron.task_gen_step",
         type=str,
         help="Number of seconds between each task generation.",
-        default=10,
+        default=180,
     )
 
     parser.add_argument(

@@ -47,7 +47,7 @@ async def forward(self):
         firstTime = True
         self._last_run_time = time.time()
 
-    # Check if 10 seconds have passed
+    # Check if task_gen_step seconds have passed
     if time.time() - self._last_run_time < task_gen_step and not firstTime:
         return
     self._last_run_time = time.time()
