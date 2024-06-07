@@ -122,9 +122,9 @@ async def forward(self):
             [
                 f"{miner_uids[i]}",  # Miner UID
                 f"{response.axon.ip}:{response.axon.port}",  # Miner IP:Port
-                response.dendrite.status_code,  # Status Code of the response
-                response["captchaValue"],  # Captcha Text
-                response["answer"][0:50],  # Selected Answer
+                response.axon.status_code,  # Status Code of the response
+                response.captchaValue,  # Captcha Text
+                response.answer[0:50],  # Selected Answer
                 f"{rewards[i]}",  # Reward
             ]
         )
