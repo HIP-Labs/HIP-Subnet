@@ -79,7 +79,7 @@ async def forward(self):
     task.answer = ground_truth
 
     # Log the results for monitoring purposes.
-    bt.logging.info(f"Received responses: {responses}")
+    # bt.logging.info(f"Received responses: {responses}")
     # For each response print the response's id and the response's answer.
     for response in responses:
         print(
