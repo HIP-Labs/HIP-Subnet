@@ -189,7 +189,7 @@ class TaskSynapse(bt.Synapse):
         Returns:
             str: A string representation of the TaskSynapse object.
         """
-        return f"TaskSynapse(id={self.id}, label={self.label}, type={self.type}, options={self.options}, value={self.value}, image={self.image}, answer={self.answer})"
+        return f"TaskSynapse(id={self.id}, label={self.label}, type={self.type}, options={self.options}, value={self.value}, image={self.image}, answer={self.answer}, captchaValue={self.captchaValue}, captcha={self.captcha}, required_hash_fields={self.required_hash_fields})"
 
     def to_dict(self):
         return {
@@ -200,4 +200,7 @@ class TaskSynapse(bt.Synapse):
             "value": self.value,
             "image": self.image,
             "answer": self.answer,
+            "captchaValue": self.captchaValue,
+            "captcha": self.captcha,
+            "required_hash_fields": self.required_hash_fields,
         }
