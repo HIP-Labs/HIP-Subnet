@@ -110,29 +110,21 @@ async def forward(self):
     printRecords = [
         [
             "UID",
-            "Hotkey",
             "IP:Port",
             "Status Code",
-            "Captcha Match",
-            "Answer Match",
-            "Captcha Text",
+            "Captcha Value",
             "Selected Answer",
             "Reward n/1",
         ]
     ]
-    for i in range(len(responses)):
+    for i, response in enumerate(responses):
         printRecords.append(
             [
                 f"{miner_uids[i]}",  # Miner UID
-                responses[i].axon.hotkey,  # Miner Hotkey
-                f"{responses[i].axon.ip}:{responses[i].axon.port}",  # Miner IP:Port
-                responses[i].dendrite.status_code,  # Status Code of the response
-                responses[i].captchaValue
-                == captcha["text"],  # Does the captcha match the ground truth
-                responses[i].answer
-                == ground_truth,  # Does the response match the ground truth
-                responses[i].captchaValue,  # Captcha Text
-                responses[i].answer[0:50],  # Selected Answer
+                f"{response.axon.ip}:{response.axon.port}",  # Miner IP:Port
+                response.dendrite.status_code,  # Status Code of the response
+                response["captchaValue"],  # Captcha Text
+                response["answer"][0:50],  # Selected Answer
                 f"{rewards[i]}",  # Reward
             ]
         )
