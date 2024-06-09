@@ -16,6 +16,11 @@ def get_llm_task(captcha: str) -> TaskSynapse:
     if taskType == "qa":
         task = text_generator.generate_question_answer(context)
         bt.logging.info(f"Task: {task}")
+
+        # Validate task["answer"] index
+        if task["answer"] < 0 or task["answer"] >= len(task["options"]):
+            raise IndexError("task['answer'] index out of range for task['options']")
+
         return TaskSynapse(
             id=str(uuid.uuid4()),
             label=task["question"],
@@ -46,6 +51,10 @@ def get_llm_task(captcha: str) -> TaskSynapse:
         shuffledSummaries = summaries.copy()
         bt.logging.info(f"Task: {summaries}")
         random.shuffle(shuffledSummaries)
+
+        # Validate summaries list
+        if not summaries:
+            raise ValueError("Summaries list is empty")
 
         return TaskSynapse(
             id=str(uuid.uuid4()),

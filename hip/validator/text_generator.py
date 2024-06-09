@@ -105,6 +105,12 @@ Output:
     assert "question" in json_converted, "Question key not found in the JSON"
     assert "options" in json_converted, "Options key not found in the JSON"
     assert "answer" in json_converted, "Answer key not found in the JSON"
+    assert isinstance(json_converted["question"], str), "Question must be a string"
+    assert isinstance(json_converted["options"], list), "Options must be a list"
+    assert isinstance(json_converted["answer"], int), "Answer must be an integer"
+    assert (
+        0 <= json_converted["answer"] < len(json_converted["options"])
+    ), "Answer index out of range"
     return json_converted
 
 

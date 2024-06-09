@@ -62,7 +62,12 @@ async def forward(self):
     if task_type == "image":
         task = generate_image_task(captcha=captcha["image"])
     else:
-        task = get_llm_task(captcha=captcha["image"])
+        try:
+            task = get_llm_task(captcha=captcha["image"])
+        except Exception as e:
+            bt.logging.error(f"Error generating llm_task: {e} \n Retrying...")
+            self._last_run_time = time.time() - (task_gen_step + 1)  # Retry immediately
+            return
 
     bt.logging.debug(f"Task: {task.id} - Generated task type: {task_type}")
     ground_truth = task.answer
