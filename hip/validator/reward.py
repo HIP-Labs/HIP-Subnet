@@ -64,10 +64,10 @@ def get_rewards(
     Returns:
     - torch.FloatTensor: A tensor of rewards for the given query and responses.
     """
-    # Randomly choose if the correct answer is the llm generated one from tasksynapse or the most common of the responses
+    # Randomly choose if the correct answer is the LLM generated one from TaskSynapse or the most common of the responses
     useLLMGeneratedAnswer = random.choice([True, False])
 
-    # But if image task, always use the preknown answer
+    # But if image task, always use the pre-known answer
     if task.image != "":
         useLLMGeneratedAnswer = True
 
@@ -84,10 +84,10 @@ def get_rewards(
             else:
                 scores[idx] = 0.0
     else:
+        answer_counts = {}
         for idx, response in enumerate(responses):
             # only consider if the captcha is correct
             if captcha_match(captcha_ground_truth, response.captchaValue):
-                answer_counts = {}
                 if response.answer in answer_counts:
                     answer_counts[response.answer] += 1
                 else:
