@@ -80,14 +80,9 @@ class BaseNeuron(ABC):
         bt.logging.info("Setting up bittensor objects.")
 
         # The wallet holds the cryptographic key pairs for the miner.
-        if self.config.mock:
-            self.wallet = bt.MockWallet(config=self.config)
-            self.subtensor = MockSubtensor(self.config.netuid, wallet=self.wallet)
-            self.metagraph = MockMetagraph(self.config.netuid, subtensor=self.subtensor)  # type: ignore
-        else:
-            self.wallet = bt.wallet(config=self.config)
-            self.subtensor = bt.subtensor(config=self.config)
-            self.metagraph = self.subtensor.metagraph(self.config.netuid)  # type: ignore
+        self.wallet = bt.wallet(config=self.config)  # type: ignore
+        self.subtensor = bt.subtensor(config=self.config)  # type: ignore
+        self.metagraph = self.subtensor.metagraph(self.config.netuid)  # type: ignore
 
         bt.logging.info(f"Wallet: {self.wallet}")
         bt.logging.info(f"Subtensor: {self.subtensor}")

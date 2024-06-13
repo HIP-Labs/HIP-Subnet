@@ -23,6 +23,28 @@ import random
 import bittensor as bt
 
 
+def linear_rewards(self, correct_answers: int) -> float:
+    # make sure the values are within the correct range (0-480)
+    correct_answers = min(correct_answers, 480)
+    correct_answers = max(correct_answers, 0)
+
+    slope = 0
+    y_intercept = 0
+
+    if correct_answers <= 100:
+        slope = 0.5
+        y_intercept = 0
+    else:
+        slope = 0.11753
+        y_intercept = 44
+
+    score_out_of_100 = slope * correct_answers + y_intercept
+    score_out_of_1 = min(
+        score_out_of_100 / 100, 1
+    )  # return a value between 0 and 1 (inclusive of 0 and 1)
+    return score_out_of_1
+
+
 def find_answer_with_highest_count(data):
     # Initialize variables to store the maximum count and corresponding string
     max_count = -1
@@ -52,8 +74,7 @@ def get_rewards(
     self,
     task: TaskSynapse,
     responses: List[TaskSynapse],
-    captcha_ground_truth: str,
-) -> torch.FloatTensor:
+) -> torch.Tensor:
     """
     Returns a tensor of rewards for the given task and responses.
 
@@ -64,53 +85,11 @@ def get_rewards(
     Returns:
     - torch.FloatTensor: A tensor of rewards for the given query and responses.
     """
-    # Randomly choose if the correct answer is the LLM generated one from TaskSynapse or the most common of the responses
-    useLLMGeneratedAnswer = random.choice([True, False])
-
-    # But if image task, always use the pre-known answer
-    if task.image != "":
-        useLLMGeneratedAnswer = True
-
-    scores: list[float] = [0.0] * len(responses)
-    chosen_answer = None
-    if useLLMGeneratedAnswer:
-        chosen_answer = task.answer
-        for idx, response in enumerate(responses):
-            if captcha_match(captcha_ground_truth, response.captchaValue):
-                if response.answer == task.answer:
-                    scores[idx] = 1.0
-                else:
-                    scores[idx] = 0.1
-            else:
-                scores[idx] = 0.0
-    else:
-        answer_counts = {}
-        for idx, response in enumerate(responses):
-            # only consider if the captcha is correct
-            if captcha_match(captcha_ground_truth, response.captchaValue):
-                if response.answer in answer_counts:
-                    answer_counts[response.answer] += 1
-                else:
-                    answer_counts[response.answer] = 1
-        # Get the answer with the most votes
-        chosen_answer = find_answer_with_highest_count(answer_counts)
-        for idx, response in enumerate(responses):
-            if response.axon and response.axon.status_code == 200:
-                if chosen_answer:
-                    if captcha_match(captcha_ground_truth, response.captchaValue):
-                        if chosen_answer == task.answer:
-                            scores[idx] = 1.0
-                        else:
-                            scores[idx] = 0.1
-                    else:
-                        scores[idx] = 0.0
-            else:
-                scores[idx] = 0.0
-    bt.logging.info(f"Use LLM Generated Answer: {useLLMGeneratedAnswer}")
-    if not useLLMGeneratedAnswer:
-        bt.logging.info(f"Chosen Answer: {chosen_answer}")
-
-    # Get all the reward results by iteratively calling your reward() function.
-    return torch.FloatTensor(scores).to(  # type: ignore
-        self.device
-    )  # type: ignore
+    correct_answer = task.answer
+    rewards = []
+    for response in responses:
+        if response.answer == correct_answer:
+            rewards.append(1.0)
+        else:
+            rewards.append(0.0)
+    return torch.FloatTensor(rewards).to(self.device)

@@ -4,10 +4,8 @@ import random
 import uuid
 import bittensor as bt
 
-from hip.validator.image_generator import generate_image_task
 
-
-def get_llm_task(captcha: str) -> TaskSynapse:
+def generate_llm_task() -> TaskSynapse:
     bt.logging.info("Generating a new task")
     context = text_generator.generate_paragraph()
     bt.logging.info(f"Context: {context}")
@@ -29,8 +27,6 @@ def get_llm_task(captcha: str) -> TaskSynapse:
             value=context,
             image="",
             answer=task["options"][task["answer"]],
-            captcha=captcha,
-            captchaValue="",
         )
     elif taskType == "sentiment_analysis":
         sentiment = text_generator.get_sentiment(context)
@@ -43,8 +39,6 @@ def get_llm_task(captcha: str) -> TaskSynapse:
             value=context,
             image="",
             answer=sentiment,
-            captcha=captcha,
-            captchaValue="",
         )
     elif taskType == "summarization":
         summaries = text_generator.generate_summaries(context)
@@ -64,20 +58,7 @@ def get_llm_task(captcha: str) -> TaskSynapse:
             value=context,
             image="",
             answer=summaries[0],
-            captcha=captcha,
-            captchaValue="",
         )
     else:
         # throw an error
         raise ValueError("Invalid task type")
-
-
-def get_image_task(captcha: str) -> TaskSynapse:
-    bt.logging.info("Generating a new image task")
-    task = generate_image_task(captcha)
-    return task
-
-
-if __name__ == "__main__":
-    task = get_image_task(captcha="captcha")
-    print(task)

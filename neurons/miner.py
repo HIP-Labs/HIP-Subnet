@@ -20,7 +20,7 @@ import os
 import time
 import typing
 import bittensor as bt
-from tinydb import TinyDB, where
+from hip.miner.miner_forward import miner_forward
 from hip.version import check_updates
 import hip
 
@@ -40,76 +40,11 @@ class Miner(BaseMinerNeuron):
     def __init__(self, config=None):
         super(Miner, self).__init__(config=config)
         print("Miner init", os.path.dirname(__file__))
-        tasks_path = os.path.join(os.path.dirname(__file__), "../", "tasks_db.json")
-        self.tasks_db = TinyDB(tasks_path)
-        answers_path = os.path.join(os.path.dirname(__file__), "../", "answers_db.json")
-        self.answers_db = TinyDB(answers_path)
-        # Remove all the tasks and answers from the database
-        # Because the miner is starting fresh
-        # self.tasks_db.truncate()
-        # self.answers_db.truncate()
-        # TODO:(developer): Anything specific to your use case you can do here
 
     async def forward(
         self, synapse: hip.protocol.TaskSynapse
     ) -> hip.protocol.TaskSynapse:
-        """
-        Processes the incoming 'TaskSynapse' synapse by performing a predefined operation on the input data.
-
-        Args:
-            synapse (template.protocol.TaskSynapse): The synapse object containing the task data.
-
-        Returns:
-            template.protocol.TaskSynapse: The synapse object with the 'answer' field set to the answer from miner.
-        """
-        # TODO:(developer): Confim if the logic is correct
-        print("Forwarding synapse to frontend")
-        task = {
-            "id": synapse.id,
-            "label": synapse.label,
-            "type": synapse.type,
-            "options": synapse.options,
-            "value": synapse.value,
-            "image": synapse.image,
-            "answer": "",
-            "captcha": synapse.captcha,
-            "expiry": int(time.time() + (synapse.timeout or 0)),
-        }
-        self.tasks_db.insert(task)
-        print(f"Task: {task['id']} inserted into the database")
-        start_time = time.time()
-        timeout = 3 * 60  # 3 minutes
-        answered = False
-        print(f"Waiting for the task: {task['id']} to be answered")
-        print(f"Timeout for the task: {task['id']} is {synapse.timeout} seconds")
-        if synapse.timeout:
-            timeout = synapse.timeout
-        while time.time() - start_time < timeout:
-            answers = self.answers_db.all()
-            for answer in answers:
-                if answer["id"] == synapse.id:
-                    answered = True
-                    break
-            if answered:
-                break
-            time.sleep(1)
-        if not answered:
-            print(f"Task: {task['id']} not answered within the timeout")
-            synapse.answer = "Not Answered"
-            self.tasks_db.remove(where("id") == synapse.id)
-            self.answers_db.remove(where("id") == synapse.id)
-            print(f"For the task: {synapse.id} the answer is: {synapse.answer}")
-            return synapse
-        else:
-            print(f"Task: {task['id']} answered within the timeout")
-            answer = self.answers_db.search(where("id") == synapse.id)[0]
-            synapse.answer = answer["answer"]
-            synapse.captchaValue = f'{answer["captchaValue"]}'.upper()
-            print(
-                f"For the task: {task['id']} the answer is: {synapse.answer} and captcha value is: {synapse.captchaValue}"
-            )
-            self.answers_db.remove(where("id") == synapse.id)
-            return synapse
+        return await miner_forward(self, synapse)
 
     # TODO: Check if the blacklist function is correct
     async def blacklist(

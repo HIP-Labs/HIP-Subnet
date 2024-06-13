@@ -37,7 +37,7 @@ class TaskSynapse(bt.Synapse):
     Attributes:
         id (str): A unique identifier for the task. This field is both mandatory and immutable.
         label (str): A string that describes the task. This field is both mandatory and immutable.
-        type (str): A string that specifies the type of the task. This field is both mandatory and immutable.
+        type (str): A string that specifies the type of the task. This field is both mandatory and immutable and can take values "select" and "text" only.
         options (List[str]): A list of options for the task. This field is both mandatory and immutable.
         value (str): A string that captures the value of the task. This field is both mandatory and immutable.
         image (str): A string that captures the image of the task. This field is both mandatory and immutable.
@@ -148,13 +148,6 @@ class TaskSynapse(bt.Synapse):
         allow_mutation=False,
     )
 
-    captcha: str = pydantic.Field(
-        ...,
-        title="Captcha",
-        description="A base64 image string of the captcha image.",
-        allow_mutation=False,
-    )
-
     image: str = pydantic.Field(
         ...,
         title="Image",
@@ -166,20 +159,7 @@ class TaskSynapse(bt.Synapse):
         "",
         title="Answer",
         description="A string that captures the answer to the task.",
-    )
-
-    captchaValue: str = pydantic.Field(
-        "",
-        title="Captcha Value",
-        description="The value of the captcha.",
-    )
-
-    #  required_hash_fields is the list of fields that are required for the hash for the request body.
-    required_hash_fields: List[str] = pydantic.Field(
-        ["id", "label", "type", "options", "value", "image", "captcha"],
-        title="Required Hash Fields",
-        description="A list of fields that are required for the hash.",
-        allow_mutation=False,
+        allow_mutation=True,
     )
 
     def __str__(self) -> str:
@@ -189,7 +169,7 @@ class TaskSynapse(bt.Synapse):
         Returns:
             str: A string representation of the TaskSynapse object.
         """
-        return f"TaskSynapse(id={self.id}, label={self.label}, type={self.type}, options={self.options}, value={self.value}, image={self.image}, answer={self.answer}, captchaValue={self.captchaValue}, captcha={self.captcha}, required_hash_fields={self.required_hash_fields})"
+        return f"TaskSynapse(id={self.id}, label={self.label}, type={self.type}, options={self.options}, value={self.value}, image={self.image}, answer={self.answer})"
 
     def to_dict(self):
         return {
@@ -200,7 +180,5 @@ class TaskSynapse(bt.Synapse):
             "value": self.value,
             "image": self.image,
             "answer": self.answer,
-            "captchaValue": self.captchaValue,
-            "captcha": self.captcha,
             "required_hash_fields": self.required_hash_fields,
         }

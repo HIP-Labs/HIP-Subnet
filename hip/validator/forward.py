@@ -22,12 +22,44 @@ import bittensor as bt
 from tabulate import tabulate
 
 from hip.protocol import TaskSynapse
-from hip.validator.image_generator import generate_image_task
+from hip.validator.generators.image_generator import generate_image_task
 from hip.validator.reward import get_rewards
 from hip.utils.uids import get_random_uids
-from hip.validator.hip_service import get_llm_task
-from hip.validator.captcha_generator import generate_capcha
+from hip.validator.generators.llm_generator import generate_llm_task
+from hip.validator.generators.captcha_generator import generate_captcha_task
 import time
+
+
+def generate_task() -> TaskSynapse:
+    """
+    Generate a random task to be sent to the miners.
+
+    Returns:
+        TaskSynapse: A randomly generated task.
+    """
+    task_type = random.choices(
+        ["image", "llm", "captcha"], weights=[0.4, 0.5, 0.1], k=1
+    )[0]
+    task = None
+    if task_type == "image":
+        task = generate_image_task()
+    elif task_type == "llm":
+        task = generate_llm_task()
+    else:  # task_type == "captcha"
+        task = generate_captcha_task()
+
+    # Log the generated task for monitoring purposes.
+    bt.logging.debug(f"Task: {task.id} - Generated task type: {task_type}")
+    task_to_print = task.to_dict()
+    # replace image and captcha entries with true or false
+    task_to_print["image"] = (
+        "True" if task_to_print["image"] and task_to_print["image"] != "" else "False"
+    )
+    bt.logging.debug(
+        f"Task: {task.id} - Generated task: {task_to_print}",
+    )
+
+    return task
 
 
 async def forward(self):
@@ -55,38 +87,18 @@ async def forward(self):
 
     bt.logging.debug("Forwarding task to miners")
     miner_uids = get_random_uids(self, k=self.config.neuron.sample_size)
-    captcha = generate_capcha()
 
-    # Decide if image or llm task should be sent
-    task_type = random.choice(["image", "llm"])
-    if task_type == "image":
-        task = generate_image_task(captcha=captcha["image"])
-    else:
-        try:
-            task = get_llm_task(captcha=captcha["image"])
-        except Exception as e:
-            bt.logging.error(f"Error generating llm_task: {e} \n Retrying...")
-            self._last_run_time = time.time() - (task_gen_step + 1)  # Retry immediately
-            return
+    # Generate a task to be sent to the miners.
+    task = None
+    try:
+        task = generate_task()
+    except Exception as e:
+        bt.logging.error(f"Error generating image_task: {e} \n Retrying...")
+        self._last_run_time = time.time() - (task_gen_step + 1)  # Retry immediately
+        return
 
-    bt.logging.debug(f"Task: {task.id} - Generated task type: {task_type}")
     ground_truth = task.answer
     task.answer = ""
-    task_to_print = task.to_dict()
-    # replace image and captcha entries with true or false
-    task_to_print["image"] = (
-        "True" if task_to_print["image"] and task_to_print["image"] != "" else "False"
-    )
-    task_to_print["captcha"] = (
-        "True"
-        if task_to_print["captcha"] and task_to_print["captcha"] != ""
-        else "False"
-    )
-    bt.logging.debug(
-        f"Task: {task.id} - Generated task: {task_to_print}",
-    )
-    bt.logging.debug(f"Task: {task.id} - Ground truth: {ground_truth}")
-    bt.logging.debug(f"Task: {task.id} - Captcha: {captcha['text']}")
 
     bt.logging.debug(
         f"Task: {task.id} - Sending task to miners with timeout {self.config.neuron.timeout}"
@@ -109,9 +121,7 @@ async def forward(self):
     # For each response print the response's id and the response's answer.
     # TODO(developer): Define how the validator scores responses.
     # Adjust the scores based on responses from miners.
-    rewards = get_rewards(
-        self, task=task, responses=responses, captcha_ground_truth=captcha["text"]
-    )
+    rewards = get_rewards(self, task=task, responses=responses)
     printRecords = [
         [
             "UID",

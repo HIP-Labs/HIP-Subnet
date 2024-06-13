@@ -1,12 +1,11 @@
 bittensor==6.9.3
 torch
 loguru
-tinydb
+peewee
 torch
 torchvision
 transformers
 accelerate
-captcha
 diffusers
 captcha
 bitsandbytes

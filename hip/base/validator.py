@@ -17,6 +17,7 @@
 # DEALINGS IN THE SOFTWARE.
 
 
+from collections import defaultdict
 import copy
 import torch
 import asyncio
@@ -49,12 +50,11 @@ class BaseValidatorNeuron(BaseNeuron):
 
         # Save a copy of the hotkeys to local memory.
         self.hotkeys = copy.deepcopy(self.metagraph.hotkeys)
+        self.rewards_log = defaultdict(
+            list
+        )  # To store the rewards with timestamps for each uid
 
-        # Dendrite lets us send messages to other nodes (axons) in the network.
-        if self.config.mock:
-            self.dendrite = MockDendrite(wallet=self.wallet)
-        else:
-            self.dendrite = bt.dendrite(wallet=self.wallet)
+        self.dendrite = bt.dendrite(wallet=self.wallet)
         bt.logging.info(f"Dendrite: {self.dendrite}")
 
         # Set up initial scoring weights for validation
@@ -240,9 +240,7 @@ class BaseValidatorNeuron(BaseNeuron):
         raw_weights = torch.nn.functional.normalize(self.scores, p=1, dim=0)
 
         bt.logging.debug("raw_weights", raw_weights)  # type: ignore
-        print("raw_weights", raw_weights)
         bt.logging.debug("raw_weight_uids", self.metagraph.uids.to("cpu"))  # type: ignore
-        print("raw_weight_uids", self.metagraph.uids.to("cpu"))
         # Process the raw weights to final_weights via subtensor limitations.
         (
             processed_weight_uids,
@@ -255,21 +253,17 @@ class BaseValidatorNeuron(BaseNeuron):
             metagraph=self.metagraph,
         )
         bt.logging.debug("processed_weights", processed_weights)
-        print("processed_weights", processed_weights)
         bt.logging.debug("processed_weight_uids", processed_weight_uids)
-        print("processed_weight_uids", processed_weight_uids)
 
         # Convert to uint16 weights and uids.
         (
             uint_uids,
             uint_weights,
         ) = bt.utils.weight_utils.convert_weights_and_uids_for_emit(  # type: ignore
-            uids=processed_weight_uids, weights=processed_weights
+            uids=processed_weight_uids, weights=processed_weights  # type: ignore
         )
         bt.logging.debug("uint_weights", uint_weights)
-        print("uint_weights", uint_weights)
         bt.logging.debug("uint_uids", uint_uids)
-        print("uint_uids", uint_uids)
         # Set the weights on chain via our subtensor connection.
         result, msg = self.subtensor.set_weights(
             wallet=self.wallet,
@@ -282,14 +276,12 @@ class BaseValidatorNeuron(BaseNeuron):
         )
         if result is True:
             bt.logging.info("set_weights on chain successfully!")
-            print("set_weights on chain successfully!")
         else:
             bt.logging.error("set_weights failed", msg)
-            print("set_weights failed", msg)
 
     def resync_metagraph(self):
         print("resync_metagraph called")
-        """Resyncs the metagraph and updates the hotkeys and moving averages based on the new metagraph."""
+        """Resyncs the metagraph and updates the hotkeys based on the new metagraph."""
         bt.logging.info("resync_metagraph()")
 
         # Copies state of metagraph before syncing.
@@ -303,58 +295,33 @@ class BaseValidatorNeuron(BaseNeuron):
             return
 
         bt.logging.info(
-            "Metagraph updated, re-syncing hotkeys, dendrite pool and moving averages"
+            "Metagraph updated, re-syncing hotkeys, dendrite pool and scores"
         )
         # Zero out all hotkeys that have been replaced.
         for uid, hotkey in enumerate(self.hotkeys):
             if hotkey != self.metagraph.hotkeys[uid]:
                 self.scores[uid] = 0  # hotkey has been replaced
+                self.rewards_log[uid] = []  # clear rewards log
 
         # Check to see if the metagraph has changed size.
-        # If so, we need to add new hotkeys and moving averages.
+        # If so, we need to add new hotkeys and scores.
         if len(self.hotkeys) < len(self.metagraph.hotkeys):
-            # Update the size of the moving average scores.
-            new_moving_average = torch.zeros((self.metagraph.n)).to(self.device)  # type: ignore
+            # TODO: Implement this. For now, we just reset the scores.
+            bt.logging.warning(
+                "Metagraph has grown in size. Resetting scores and hotkeys."
+            )
+            # Update the size of the scores.
+            all_scores = torch.zeros((self.metagraph.n)).to(self.device)  # type: ignore
             min_len = min(len(self.hotkeys), len(self.scores))
-            new_moving_average[:min_len] = self.scores[:min_len]
-            self.scores = new_moving_average
+            all_scores[:min_len] = self.scores[:min_len]
+            self.scores = all_scores
 
         # Update the hotkeys.
         self.hotkeys = copy.deepcopy(self.metagraph.hotkeys)
 
     def update_scores(self, rewards: torch.FloatTensor, uids: List[int]):
-        """Performs exponential moving average on the scores based on the rewards received from the miners."""
-
-        # Check if rewards contains NaN values.
-        if torch.isnan(rewards).any():
-            bt.logging.warning(f"NaN values detected in rewards: {rewards}")
-            # Replace any NaN values in rewards with 0.
-            rewards = torch.nan_to_num(rewards, 0)  # type: ignore
-
-        # Check if `uids` is already a tensor and clone it to avoid the warning.
-        if isinstance(uids, torch.Tensor):
-            uids_tensor = uids.clone().detach()
-        else:
-            uids_tensor = torch.tensor(uids).to(self.device)
-
-        # Compute forward pass rewards, assumes uids are mutually exclusive.
-        # shape: [ metagraph.n ]
-        scattered_rewards: torch.FloatTensor = self.scores.scatter(
-            0, uids_tensor, rewards
-        ).to(
-            self.device
-        )  # type: ignore
-        bt.logging.debug(f"Scattered rewards: {rewards}")
-
-        # Update scores with rewards produced by this step.
-        # shape: [ metagraph.n ]
-        alpha: float = self.config.neuron.moving_average_alpha
-        self.scores: torch.FloatTensor = alpha * scattered_rewards + (
-            1 - alpha
-        ) * self.scores.to(
-            self.device
-        )  # type: ignore
-        bt.logging.debug(f"Updated moving avg scores: {self.scores}")
+        """This function should be overridden by the subclass."""
+        bt.logging.error("update_scores called from base file")
 
     def save_state(self):
         """Saves the state of the validator to a file."""
@@ -366,6 +333,7 @@ class BaseValidatorNeuron(BaseNeuron):
                 "step": self.step,
                 "scores": self.scores,
                 "hotkeys": self.hotkeys,
+                "rewards_log": self.rewards_log,
             },
             self.config.neuron.full_path + "/state.pt",
         )
@@ -379,3 +347,4 @@ class BaseValidatorNeuron(BaseNeuron):
         self.step = state["step"]
         self.scores = state["scores"]
         self.hotkeys = state["hotkeys"]
+        self.rewards_log = state["rewards_log"]
