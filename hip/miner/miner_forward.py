@@ -1,7 +1,7 @@
 import bittensor as bt
 import time
 from hip.protocol import TaskSynapse
-from db import Task, Option, SessionLocal
+from hip.miner.db import Task, Option, SessionLocal
 
 # Create a new database session
 db = SessionLocal()
