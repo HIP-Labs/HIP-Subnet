@@ -50,7 +50,7 @@ async def miner_forward(self, synapse: TaskSynapse) -> TaskSynapse:
         options=synapse.options,
         value=synapse.value,
         image=synapse.image,
-        expiry=time.time() + 180,
+        expiry=int(time.time()) + 180,
     )
     bt.logging.debug(f"Task: {synapse.id} inserted into the database")
 
@@ -67,6 +67,10 @@ async def miner_forward(self, synapse: TaskSynapse) -> TaskSynapse:
             if answered:
                 bt.logging.debug(f"Task: {db_task.id} answered")
                 break
+            else:
+                bt.logging.debug(f"Task: {db_task.id} not answered yet")
+        elif db_task is None:
+            bt.logging.debug(f"Task: {synapse.id} not found in the database")
         # Sleep for a certain amount of time before checking again
         time.sleep(2)
     if not answered:
