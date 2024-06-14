@@ -89,7 +89,7 @@ def get_rewards(
     rewards = []
     for response in responses:
         if response.answer == correct_answer:
-            rewards.append(1.0)
+            rewards.append(65535)
         else:
             rewards.append(0.0)
     return torch.FloatTensor(rewards).to(self.device)

@@ -78,7 +78,7 @@ class Validator(BaseValidatorNeuron):
             ]
 
             # Separate regular questions and captchas
-            correct_answers = sum(1 for r, t, qtype in recent_rewards if r == 1.0)
+            correct_answers = sum(1 for r, t, qtype in recent_rewards if r > 0.0)
             captcha_penalties = sum(
                 1 for r, t, qtype in recent_rewards if qtype == "captcha" and r == 0.0
             )
