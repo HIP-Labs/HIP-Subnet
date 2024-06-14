@@ -43,7 +43,7 @@ async def miner_forward(self, synapse: TaskSynapse) -> TaskSynapse:
         hip.protocol.TaskSynapse: The synapse object with the 'answer' field set to the answer from miner.
     """
     bt.logging.debug("Forwarding synapse to frontend")
-    add_task(
+    db_task = add_task(
         id=synapse.id,
         label=synapse.label,
         type=synapse.type,
@@ -59,26 +59,21 @@ async def miner_forward(self, synapse: TaskSynapse) -> TaskSynapse:
     start_time = int(time.time())
     timeout = 180  # Default timeout is 180 seconds
     bt.logging.debug(f"Waiting for the task: {synapse.id} to be answered")
-    db_task = None
     while int(time.time()) - start_time < timeout:
-        db_task = get_task(synapse.id)
-        if db_task is not None:
-            answered = str(db_task.answer) != ""
-            if answered:
-                bt.logging.debug(f"Task: {db_task.id} answered")
-                break
-            else:
-                bt.logging.debug(f"Task: {db_task.id} not answered yet")
-        elif db_task is None:
-            bt.logging.debug(f"Task: {synapse.id} not found in the database")
+        db.refresh(db_task)  # Refresh the task instance to get the latest state
+        answered = str(db_task.answer) != ""
+        if answered:
+            bt.logging.debug(f"Task: {db_task.id} answered with: {db_task.answer}")
+            break
+        else:
+            bt.logging.debug(f"Task: {db_task.id} not answered yet")
         # Sleep for a certain amount of time before checking again
         time.sleep(2)
     if not answered:
         bt.logging.debug(f"Task: {synapse.id} not answered within the timeout")
-    elif db_task is None:
-        bt.logging.debug(f"Task: {synapse.id} not found in the database")
-    # If the task is answered within the timeout the db_task will not be None
-    if answered and db_task is not None:
+
+    # If the task is answered
+    if answered:
         print(f"Task: {db_task.id} answered within the timeout")
         synapse.answer = str(db_task.answer)
         print(f"For the task: {db_task.id} the answer is: {synapse.answer}")
