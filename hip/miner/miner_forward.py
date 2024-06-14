@@ -82,5 +82,7 @@ async def miner_forward(self, synapse: TaskSynapse) -> TaskSynapse:
         print(f"Task: {db_task.id} answered within the timeout")
         synapse.answer = str(db_task.answer)
         print(f"For the task: {db_task.id} the answer is: {synapse.answer}")
+    else:
+        synapse.answer = "Task not answered within the timeout"
 
     return synapse

@@ -19,7 +19,6 @@ class Task(Base):
     image = Column(String, nullable=False)
     answer = Column(String, nullable=False)
     expiry = Column(Integer, nullable=False)
-    answer = Column(String, nullable=False)
 
     options = relationship(
         "Option", back_populates="task", cascade="all, delete-orphan"

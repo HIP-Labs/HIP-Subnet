@@ -90,10 +90,13 @@ async def post_answer(answer: Answer, db: Session = Depends(get_db)):
     # remove all expired tasks
     db.query(Task).filter(Task.expiry < int(time.time())).delete()
     db.commit()
-    # update the answer of the task with the given id
-    db.query(Task).filter(Task.id == answer.id).update({"answer": answer.answer})
-    db.commit()
 
+    task = db.query(Task).filter(Task.id == answer.id).first()
+    if task:
+        task.answer = answer.answer  # type: ignore
+        db.commit()  # Explicitly commit the session
+    else:
+        print(f"Task with id {answer.id} not found")
     return JSONResponse(
         status_code=200, content={"status": "success", "message": "Answer updated"}
     )
