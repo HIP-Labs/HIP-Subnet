@@ -1,13 +1,35 @@
 import bittensor as bt
 import time
-from hip.miner.db import SQLiteClient
 from hip.protocol import TaskSynapse
+from db import Task, Option, SessionLocal
 
-tasks_db = SQLiteClient("tasks.db")
-tasks_db.check_schema()
-tasks_db.create_tables()
-tasks_db.connect()
-tasks_db.remove_expired_tasks()
+# Create a new database session
+db = SessionLocal()
+
+
+def add_task(id, label, type, value, image, expiry, options):
+    task = Task(
+        id=id,
+        label=label,
+        type=type,
+        value=value,
+        image=image,
+        expiry=expiry,
+        answer="",
+    )
+    db.add(task)
+    db.commit()
+    db.refresh(task)
+
+    for option_text in options:
+        option = Option(task_id=task.id, option=option_text)
+        db.add(option)
+    db.commit()
+    return task
+
+
+def get_task(task_id: str):
+    return db.query(Task).filter(Task.id == task_id).first()
 
 
 async def miner_forward(self, synapse: TaskSynapse) -> TaskSynapse:
@@ -20,16 +42,15 @@ async def miner_forward(self, synapse: TaskSynapse) -> TaskSynapse:
     Returns:
         hip.protocol.TaskSynapse: The synapse object with the 'answer' field set to the answer from miner.
     """
-    tasks_db.remove_expired_tasks()
     bt.logging.debug("Forwarding synapse to frontend")
-    tasks_db.insert_task(
-        task_id=synapse.id,
+    add_task(
+        id=synapse.id,
         label=synapse.label,
         type=synapse.type,
         options=synapse.options,
         value=synapse.value,
         image=synapse.image,
-        answer="",
+        expiry=time.time() + 180,
     )
     bt.logging.debug(f"Task: {synapse.id} inserted into the database")
 
@@ -39,13 +60,20 @@ async def miner_forward(self, synapse: TaskSynapse) -> TaskSynapse:
     timeout = 180  # Default timeout is 180 seconds
     bt.logging.debug(f"Waiting for the task: {synapse.id} to be answered")
     db_task = None
+    sleep_times = [30, 20, 10, 2]
+    sleep_index = 0
+
     while int(time.time()) - start_time < timeout:
-        db_task = tasks_db.get_task(synapse.id)
+        db_task = get_task(synapse.id)
         if db_task is not None:
-            answered = db_task.answer != ""
+            answered = str(db_task.answer) != ""
             if answered:
                 break
-        time.sleep(1)
+        # Sleep for a certain amount of time before checking again
+        time.sleep(sleep_times[sleep_index])
+        if sleep_index < len(sleep_times) - 1:
+            sleep_index += 1
+
     # If the task is answered within the timeout the db_task will not be None
     if answered and db_task is not None:
         print(f"Task: {db_task.id} answered within the timeout")

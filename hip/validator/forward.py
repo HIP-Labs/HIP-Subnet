@@ -19,6 +19,7 @@
 
 import random
 import bittensor as bt
+from typing import Tuple
 from tabulate import tabulate
 
 from hip.protocol import TaskSynapse
@@ -30,7 +31,7 @@ from hip.validator.generators.captcha_generator import generate_captcha_task
 import time
 
 
-def generate_task() -> TaskSynapse:
+def generate_task() -> Tuple[TaskSynapse, str]:
     """
     Generate a random task to be sent to the miners.
 
@@ -59,7 +60,7 @@ def generate_task() -> TaskSynapse:
         f"Task: {task.id} - Generated task: {task_to_print}",
     )
 
-    return task
+    return task, task_type
 
 
 async def forward(self):
@@ -90,8 +91,9 @@ async def forward(self):
 
     # Generate a task to be sent to the miners.
     task = None
+    task_type = None
     try:
-        task = generate_task()
+        task, task_type = generate_task()
     except Exception as e:
         bt.logging.error(f"Error generating image_task: {e} \n Retrying...")
         self._last_run_time = time.time() - (task_gen_step + 1)  # Retry immediately
@@ -150,4 +152,4 @@ async def forward(self):
         )
     )
     # Update the scores based on the rewards. You may want to define your own update_scores function for custom behavior.
-    self.update_scores(rewards, miner_uids)
+    self.update_scores(rewards, miner_uids, task_type)

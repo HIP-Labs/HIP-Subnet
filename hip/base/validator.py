@@ -319,7 +319,9 @@ class BaseValidatorNeuron(BaseNeuron):
         # Update the hotkeys.
         self.hotkeys = copy.deepcopy(self.metagraph.hotkeys)
 
-    def update_scores(self, rewards: torch.FloatTensor, uids: List[int]):
+    def update_scores(
+        self, rewards: torch.FloatTensor, uids: List[int], question_type: str
+    ):
         """This function should be overridden by the subclass."""
         bt.logging.error("update_scores called from base file")
 
