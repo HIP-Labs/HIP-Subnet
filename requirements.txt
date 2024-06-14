@@ -1,7 +1,7 @@
 bittensor==6.9.3
 torch
 loguru
-peewee
+sqlalchemy
 torch
 torchvision
 transformers
