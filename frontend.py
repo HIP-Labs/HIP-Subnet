@@ -10,8 +10,9 @@ app = FastAPI()
 
 tasks_db = SQLiteClient("tasks.db")
 tasks_db.check_schema()
-tasks_db.remove_expired_tasks()
 tasks_db.connect()
+tasks_db.create_tables()
+tasks_db.remove_expired_tasks()
 
 
 enable_cors = os.environ.get("CORS")

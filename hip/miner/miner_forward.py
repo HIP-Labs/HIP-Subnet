@@ -5,8 +5,9 @@ from hip.protocol import TaskSynapse
 
 tasks_db = SQLiteClient("tasks.db")
 tasks_db.check_schema()
-tasks_db.remove_expired_tasks()
+tasks_db.create_tables()
 tasks_db.connect()
+tasks_db.remove_expired_tasks()
 
 
 async def miner_forward(self, synapse: TaskSynapse) -> TaskSynapse:
