@@ -89,7 +89,7 @@ class Validator(BaseValidatorNeuron):
             # For each wrong answer, penalize the score by 1% by computing the penalty
             # as 1% of the total number of wrong answers
             for i in range(wrong_answers):
-                score = score * 1
+                score = score * 0.99
 
             # For each wrong captcha answer, penalize the score by 5% by computing the penalty
             # as 5% of the total number of failed captchas
