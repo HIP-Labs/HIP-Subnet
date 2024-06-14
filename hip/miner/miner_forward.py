@@ -60,20 +60,19 @@ async def miner_forward(self, synapse: TaskSynapse) -> TaskSynapse:
     timeout = 180  # Default timeout is 180 seconds
     bt.logging.debug(f"Waiting for the task: {synapse.id} to be answered")
     db_task = None
-    sleep_times = [30, 20, 10, 2]
-    sleep_index = 0
-
     while int(time.time()) - start_time < timeout:
         db_task = get_task(synapse.id)
         if db_task is not None:
             answered = str(db_task.answer) != ""
             if answered:
+                bt.logging.debug(f"Task: {db_task.id} answered")
                 break
         # Sleep for a certain amount of time before checking again
-        time.sleep(sleep_times[sleep_index])
-        if sleep_index < len(sleep_times) - 1:
-            sleep_index += 1
-
+        time.sleep(2)
+    if not answered:
+        bt.logging.debug(f"Task: {synapse.id} not answered within the timeout")
+    elif db_task is None:
+        bt.logging.debug(f"Task: {synapse.id} not found in the database")
     # If the task is answered within the timeout the db_task will not be None
     if answered and db_task is not None:
         print(f"Task: {db_task.id} answered within the timeout")
