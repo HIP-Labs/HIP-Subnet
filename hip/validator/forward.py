@@ -130,7 +130,7 @@ async def forward(self):
             "IP:Port",
             "Status Code",
             "Selected Answer",
-            "Reward n/1",
+            "Reward n/65535",
         ]
     ]
     for i, response in enumerate(responses):
