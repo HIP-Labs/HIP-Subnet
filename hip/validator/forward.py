@@ -51,7 +51,7 @@ def generate_task() -> TaskSynapse:
     # Log the generated task for monitoring purposes.
     bt.logging.debug(f"Task: {task.id} - Generated task type: {task_type}")
     task_to_print = task.to_dict()
-    # replace image and captcha entries with true or false
+    # replace image entry with true or false
     task_to_print["image"] = (
         "True" if task_to_print["image"] and task_to_print["image"] != "" else "False"
     )
@@ -127,7 +127,6 @@ async def forward(self):
             "UID",
             "IP:Port",
             "Status Code",
-            "Captcha Value",
             "Selected Answer",
             "Reward n/1",
         ]
@@ -138,7 +137,6 @@ async def forward(self):
                 f"{miner_uids[i]}",  # Miner UID
                 f"{response.axon.ip}:{response.axon.port}",  # Miner IP:Port
                 response.axon.status_code,  # Status Code of the response
-                response.captchaValue,  # Captcha Text
                 response.answer[0:50],  # Selected Answer
                 f"{rewards[i]}",  # Reward
             ]
