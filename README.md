@@ -1,27 +1,26 @@
 # Bittensor Subnet  #36
 
----
-Please submit issues and pull requests through this repo.
----
-
 # HIP (Human Intelligence Primitive) Subnet
 
----
-
-> The HIP (Human Intelligence Primitive) Subnet is a [Bittensor](https://github.com/opentensor/bittensor) subnet designed to provide human intelligence services to other subnets. It will allow other subnets to send their data to the HIP Subnet for human evaluation, testing, and feedback. The HIP Subnet harnesses the collective intelligence of human miners who compete to provide high-quality evaluations and insights on the submitted data. Validators in the HIP Subnet assess the quality of the miners' responses and distribute rewards accordingly, creating an incentive mechanism that promotes diverse and valuable human feedback.
+The HIP (Human Intelligence Primitive) Subnet is a [Bittensor](https://github.com/opentensor/bittensor) subnet designed to provide human intelligence services to other subnets. It will allow other subnets to send their data to the HIP Subnet for human evaluation, testing, and feedback. The HIP Subnet harnesses the collective intelligence of human miners who compete to provide high-quality evaluations and insights on the submitted data. Validators in the HIP Subnet assess the quality of the miners' responses and distribute rewards accordingly, creating an incentive mechanism that promotes diverse and valuable human feedback.
 
 ## Features
 
-##### Human Intelligence Primitives:
+- **Human Intelligence Primitives**: The HIP Subnet aims to leverage human intelligence to perform tasks that require subjective judgment, contextual understanding, and creative problem-solving. Miners in the HIP Subnet are human participants who contribute their cognitive abilities to evaluate and provide feedback on data submitted by other subnets.*
 
- > The HIP Subnet leverages human intelligence to perform tasks that require subjective judgment, contextual understanding, and creative problem-solving. Miners in the HIP Subnet are human participants who contribute their cognitive abilities to evaluate and provide feedback on data submitted by other subnets.
+- **Incentive Mechanism**: The HIP Subnet implements an incentive mechanism that rewards miners for providing high-quality evaluations and feedback. Miners compete to offer the most valuable insights, and the subnet's validators distribute rewards based on the quality and human-likeness of the miners' responses. This incentive structure encourages miners to deliver their best work and continuously improve the network's overall performance.
 
+## Getting Started
 
-##### Incentive Mechanism:
+To participate in the HIP Subnet as a miner or validator, follow the instructions in the respective guides:
 
- > The HIP Subnet implements an incentive mechanism that rewards miners for providing high-quality evaluations and feedback. Miners compete to offer the most valuable insights, and the subnet's validators distribute rewards based on the quality and human-likeness of the miners' responses. This incentive structure encourages miners to deliver their best work and continuously improve the networks overall performance.
+- [Mining Guide](docs/mining-guide.md)
+- [Validator Guide](docs/validator-guide.md)
 
-```
+Please note that Bittensor is currently supported on macOS and Linux, with limited support for Windows.
+
+## Reward Model
+
 The current reward model works as follows:
 
 1. The validator generates a task, which can be either an image-based task or a text-based task (LLM task).
@@ -30,31 +29,22 @@ The current reward model works as follows:
 4. The validator collects the responses from the miners.
 5. The validator calculates the rewards for each miner based on the following criteria:
    - If the miner's captcha answer matches the true captcha, their response is considered valid.
-   - If the miner's response is valid and their task answer matches the correct answer (determined by either the LLM-generated answer or the most common answer among the miners), they receive a reward of 1.0.
-   - If the miner's response is valid but their task answer is incorrect, they receive a reward of 0.1.
-   - If the miner's captcha answer is incorrect, their response is considered invalid, and they receive a reward of 0.0 regardless of their task answer.
+   - If the miner's response is valid and their task answer matches the correct answer (determined by either the LLM-generated answer or the most common answer among the miners), they receive the highest reward.
+   - If the miner's response is valid but their task answer is incorrect, they receive a small reward.
+   - If the miner's captcha answer is incorrect, their response is considered invalid, and they do not receive a reward regardless of their task answer.
 6. The validator updates the scores of the miners based on the calculated rewards.
-```
-
->When a miner submits a valid response (correct captcha and task answer), they receive the highest reward. If their response is valid but the task answer is incorrect, they receive a lower reward.
 ---
->Miners who consistently provide correct answers will accumulate higher total rewards over time compared to miners who don't respond or provide incorrect answers.
----
->The validator updates the scores of the miners based on the rewards they earn for each task. These scores are used to determine the overall performance and ranking of the miners.
----
->As more miners start actively participating and providing correct answers, the relative rewards of the inactive or underperforming miners will decrease. This is because the active miners will be earning higher rewards, while the inactive miners will not be accumulating rewards at the same rate.
----
->Consequently, the scores of the active and accurate miners will increase, while the scores of the inactive or inaccurate miners will relatively decrease or stagnate.
+When a miner submits a valid response (correct captcha and task answer), they receive the highest reward. If their response is valid but the task answer is incorrect, they receive a lower reward.
+
+Miners who consistently provide correct answers will accumulate higher total rewards over time compared to miners who don't respond or provide incorrect answers.
+
+The validator updates the scores of the miners based on the rewards they earn for each task. These scores are used to determine the overall performance and ranking of the miners.
+
+As more miners start actively participating and providing correct answers, the relative rewards of the inactive or underperforming miners will decrease. This is because the active miners will be earning higher rewards, while the inactive miners will not be accumulating rewards at the same rate.
+
+Consequently, the scores of the active and accurate miners will increase, while the scores of the inactive or inaccurate miners will relatively decrease or stagnate.
 
 ---
-
-
-# Getting Started
-
-<em>note: Bittensor is currently supported on macOS and Linux with limited support for Windows.</em>
-
-To participate in the HIP Subnet as a miner or validator, follow these steps:
-
 
 # Mining
 
