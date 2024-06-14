@@ -162,6 +162,14 @@ class TaskSynapse(bt.Synapse):
         allow_mutation=True,
     )
 
+    #  required_hash_fields is the list of fields that are required for the hash for the request body.
+    required_hash_fields: List[str] = pydantic.Field(  # type: ignore
+        ["id", "label", "type", "options", "value", "image"],
+        title="Required Hash Fields",
+        description="A list of fields that are required for the hash.",
+        allow_mutation=False,
+    )
+
     def __str__(self) -> str:
         """
         Returns a string representation of the TaskSynapse object.
