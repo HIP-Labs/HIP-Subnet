@@ -79,23 +79,37 @@ class Validator(BaseValidatorNeuron):
 
             # Separate regular questions and captchas
             correct_answers = sum(1 for r, t, qtype in recent_rewards if r > 0.0)
+            correct_capthas = sum(
+                1 for r, t, qtype in recent_rewards if r > 0.0 and qtype == "captcha"
+            )
+
             captcha_penalties = sum(
                 1 for r, t, qtype in recent_rewards if qtype == "captcha" and r == 0.0
             )
             wrong_answers = sum(
                 1 for r, t, qtype in recent_rewards if r == 0.0 and qtype != "captcha"
             )
-
-            # For each wrong answer, penalize the score by 1% by computing the penalty
-            # as 1% of the total number of wrong answers
-            for i in range(wrong_answers):
-                score = score * 0.99
-
-            # For each wrong captcha answer, penalize the score by 5% by computing the penalty
-            # as 5% of the total number of failed captchas
             score = linear_rewards(self, correct_answers)
-            for i in range(captcha_penalties):
-                score = score * 0.95
+
+            penalize_score = True
+            # Realistically, a real human being can't answer for more than 8 hours a day
+            # so we do not penalize the score if the miner has answered more than 8 hours a day
+            # We know that probability of a captcha occuring is 10% in whole day we will get
+            # 10% of 480 = 48 captchas in a day
+            # in 8 hours we will get 48/3 = 16 captchas
+            if correct_capthas > 16:
+                penalize_score = False
+
+            if penalize_score:
+                # For each wrong answer, penalize the score by 1% by computing the penalty
+                # as 1% of the total number of wrong answers
+                for i in range(wrong_answers):
+                    score = score * 0.99
+
+                # For each wrong captcha answer, penalize the score by 5% by computing the penalty
+                # as 5% of the total number of failed captchas
+                for i in range(captcha_penalties):
+                    score = score * 0.95
 
             # Update the scores tensor
             self.scores[uid] = torch.FloatTensor([score])

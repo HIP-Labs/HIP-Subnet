@@ -25,6 +25,8 @@ import bittensor as bt
 
 def linear_rewards(self, correct_answers: int) -> float:
     # make sure the values are within the correct range (0-480)
+    # Max 480 assumes that the maximum number of questions is 480 in 24 hours
+    # That is 180 seconds per question
     correct_answers = min(correct_answers, 480)
     correct_answers = max(correct_answers, 0)
 
@@ -42,7 +44,7 @@ def linear_rewards(self, correct_answers: int) -> float:
     score_out_of_1 = min(
         score_out_of_100 / 100, 1
     )  # return a value between 0 and 1 (inclusive of 0 and 1)
-    return score_out_of_1
+    return score_out_of_1 * 65535  # return a value between 0 and 65535
 
 
 def find_answer_with_highest_count(data):
@@ -89,7 +91,7 @@ def get_rewards(
     rewards = []
     for response in responses:
         if response.answer == correct_answer:
-            rewards.append(65535)
+            rewards.append(65535.0)
         else:
             rewards.append(0.0)
     return torch.FloatTensor(rewards).to(self.device)
