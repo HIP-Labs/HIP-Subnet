@@ -324,6 +324,7 @@ class BaseValidatorNeuron(BaseNeuron):
         self, rewards: torch.FloatTensor, uids: List[int], question_type: str
     ):
         current_time = time.time()
+        bt.logging.info(f"Updating scores called with rewards")
 
         for uid, reward in zip(uids, rewards):
             if uid not in self.rewards_log:
