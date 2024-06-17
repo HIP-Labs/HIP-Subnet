@@ -116,21 +116,17 @@ async def forward(self):
         # You are encouraged to define your own deserialization function.
         deserialize=True,
     )
-    task.answer = ground_truth
 
-    # Log the results for monitoring purposes.
-    # bt.logging.info(f"Received responses: {responses}")
-    # For each response print the response's id and the response's answer.
-    # TODO(developer): Define how the validator scores responses.
-    # Adjust the scores based on responses from miners.
-    rewards = get_rewards(self, task=task, responses=responses)
+    is_correct_answer = get_rewards(
+        self, ground_truth=ground_truth, responses=responses
+    )
     printRecords = [
         [
             "UID",
             "IP:Port",
             "Status Code",
             "Selected Answer",
-            "Reward n/65535",
+            "Is Answer Correct",
         ]
     ]
     for i, response in enumerate(responses):
@@ -138,9 +134,11 @@ async def forward(self):
             [
                 f"{miner_uids[i]}",  # Miner UID
                 f"{response.axon.ip}:{response.axon.port}",  # Miner IP:Port
-                response.axon.status_code,  # Status Code of the response
+                (
+                    response.axon.status_code if response.axon.status_code else "408"
+                ),  # Status Code of the response
                 response.answer[0:50],  # Selected Answer
-                f"{rewards[i]}",  # Reward
+                f"{is_correct_answer[i]}",  # is answer correct
             ]
         )
 
@@ -152,4 +150,4 @@ async def forward(self):
         )
     )
     # Update the scores based on the rewards. You may want to define your own update_scores function for custom behavior.
-    self.update_scores(rewards, miner_uids, task_type)
+    self.update_scores(is_correct_answer, miner_uids, task_type)

@@ -74,9 +74,9 @@ def captcha_match(captcha_ground_truth: str, captchaValue: str) -> bool:
 
 def get_rewards(
     self,
-    task: TaskSynapse,
+    ground_truth: str,
     responses: List[TaskSynapse],
-) -> torch.Tensor:
+) -> List[bool]:
     """
     Returns a tensor of rewards for the given task and responses.
 
@@ -85,13 +85,13 @@ def get_rewards(
     - responses (List[TaskSynapse]): A list of responses from the miner.
 
     Returns:
-    - torch.FloatTensor: A tensor of rewards for the given query and responses.
+    - List[bool]: A list of boolean values indicating whether the response is correct or not.
     """
-    correct_answer = task.answer
-    rewards = []
+    correct_answer = ground_truth
+    is_answer_correct = []
     for response in responses:
         if response.answer == correct_answer:
-            rewards.append(65535.0)
+            is_answer_correct.append(True)
         else:
-            rewards.append(0.0)
-    return torch.FloatTensor(rewards).to(self.device)
+            is_answer_correct.append(False)
+    return is_answer_correct

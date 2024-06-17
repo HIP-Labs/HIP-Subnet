@@ -141,21 +141,34 @@ class BaseNeuron(ABC):
         ) > self.config.neuron.epoch_length
 
     def should_set_weights(self) -> bool:
+        bt.logging.info(f"should_set_weights() called")
         # Don't set weights on initialization.
         if self.step == 0:
+            bt.logging.debug("should_set_weights(): step == 0")
             return False
 
         # Check if enough epoch blocks have elapsed since the last epoch.
         if self.config.neuron.disable_set_weights:
+            bt.logging.debug("should_set_weights(): disable_set_weights is True")
             return False
 
         # If neuron has validator permit we assume its running the validator code. If it is a dual permit neuron then we check that it also has a set_weights method (only true if it is running validator neuron)
         if not self.metagraph.validator_permit[self.uid] or not hasattr(
             self, "set_weights"
         ):
+            bt.logging.debug(
+                "should_set_weights(): not validator_permit or no set_weights method"
+            )
             return False
 
         # Define appropriate logic for when set weights.
+        bt.logging.debug(
+            f"should_set_weights(): block - last_update = {self.block - self.metagraph.last_update[self.uid]}"
+        )
+        bt.logging.debug(
+            f"should_set_weights(): epoch_length = {self.config.neuron.epoch_length}"
+        )
+        bt.logging.debug(f"should_set_weights(): neuron_type = {self.neuron_type}")
         return (
             self.block - self.metagraph.last_update[self.uid]
         ) > self.config.neuron.epoch_length and self.neuron_type != "MinerNeuron"  # don't set weights if you're a miner
