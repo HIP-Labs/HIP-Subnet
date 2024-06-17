@@ -25,7 +25,7 @@ import argparse
 import threading
 import bittensor as bt
 import time
-from typing import List
+from typing import List, Literal
 from traceback import print_exception
 
 from hip.base.neuron import BaseNeuron
@@ -51,19 +51,20 @@ class BaseValidatorNeuron(BaseNeuron):
 
         # Save a copy of the hotkeys to local memory.
         self.hotkeys = copy.deepcopy(self.metagraph.hotkeys)
-        self.rewards_log = defaultdict(
-            list
-        )  # To store the rewards with timestamps for each uid
 
         self.dendrite = bt.dendrite(wallet=self.wallet)
         bt.logging.info(f"Dendrite: {self.dendrite}")
 
         # Set up initial scoring weights for validation
-        bt.logging.info("Building validation weights.")
+        bt.logging.info("self.score: Building validation weights.")
         self.scores = torch.zeros(
             self.metagraph.n, dtype=torch.float32, device=self.device  # type: ignore
         )  # type: ignore
-
+        # tasks_history is a list of lists, where each list contains tuples of the form (is_answer_correct: bool, timestamp: int, question_type: Literal["captcha", "normal"]) for each question answered by a miner.
+        # the base list is indexed by the miner's uid. len(self.metagraph.uids) is the length of the list.
+        self.tasks_history: list[
+            list[tuple[bool, int, Literal["captcha", "normal"]]]
+        ] = [[] for _ in range(self.metagraph.n)]
         # Init sync with the network. Updates the metagraph.
         self.sync()
 
@@ -230,12 +231,11 @@ class BaseValidatorNeuron(BaseNeuron):
         # Check if self.scores contains any NaN values and log a warning if it does.
         if torch.isnan(self.scores).any():
             bt.logging.warning(
-                f"Scores contain NaN values. This may be due to a lack of responses from miners, or a bug in your reward functions."
-            )
-            print(
-                "Scores contain NaN values. This may be due to a lack of responses from miners, or a bug in your reward functions."
+                f"self.score: Scores contain NaN values. This may be due to a lack of responses from miners, or a bug in your reward functions."
             )
 
+        bt.logging.debug("Setting weights on chain with scores: ")
+        bt.logging.debug(self.scores)
         # Calculate the average reward for each uid across non-zero values.
         # Replace any NaN values with 0.
         raw_weights = torch.nn.functional.normalize(self.scores, p=1, dim=0)
@@ -301,55 +301,80 @@ class BaseValidatorNeuron(BaseNeuron):
         # Zero out all hotkeys that have been replaced.
         for uid, hotkey in enumerate(self.hotkeys):
             if hotkey != self.metagraph.hotkeys[uid]:
+                bt.logging.debug(f"Hotkey {hotkey} has been replaced.")
+                bt.logging.debug(f"self.score: Zeroing out score for uid {uid}")
                 self.scores[uid] = 0  # hotkey has been replaced
-                self.rewards_log[uid] = []  # clear rewards log
+                self.tasks_history[uid] = []  # clear rewards log
 
         # Check to see if the metagraph has changed size.
         # If so, we need to add new hotkeys and scores.
         if len(self.hotkeys) < len(self.metagraph.hotkeys):
             # TODO: Implement this. For now, we just reset the scores.
             bt.logging.warning(
-                "Metagraph has grown in size. Resetting scores and hotkeys."
+                "self.score: Metagraph has grown in size. Resetting scores and hotkeys."
             )
             # Update the size of the scores.
             all_scores = torch.zeros((self.metagraph.n)).to(self.device)  # type: ignore
             min_len = min(len(self.hotkeys), len(self.scores))
             all_scores[:min_len] = self.scores[:min_len]
             self.scores = all_scores
-
+            # Update the size of the tasks_history.
+            all_tasks_history: list[
+                list[tuple[bool, int, Literal["captcha", "normal"]]]
+            ] = [[] for _ in range(self.metagraph.n)]
+            min_len = min(len(self.tasks_history), len(all_tasks_history))
+            all_tasks_history[:min_len] = self.tasks_history[:min_len]
+            self.tasks_history = all_tasks_history
         # Update the hotkeys.
         self.hotkeys = copy.deepcopy(self.metagraph.hotkeys)
 
     def update_scores(
-        self, rewards: torch.FloatTensor, uids: List[int], question_type: str
+        self,
+        is_correct_answers: List[bool],
+        uids: List[int],
+        question_type: Literal["captcha", "normal"],
     ):
-        current_time = time.time()
+        current_time = int(time.time())
         bt.logging.info(f"Updating scores called with rewards")
 
-        for uid, reward in zip(uids, rewards):
-            if uid not in self.rewards_log:
-                self.rewards_log[uid] = []
-            self.rewards_log[uid].append((reward.item(), current_time, question_type))
+        for uid, is_answer_correct in zip(uids, is_correct_answers):
+            if uid not in self.tasks_history:
+                self.tasks_history[uid] = []
+            self.tasks_history[uid].append(
+                (is_answer_correct, current_time, question_type)
+            )
+
+        # Now that we have the rewards, we can update the scores.
 
         for uid in uids:
-            # Filter rewards for the last 24 hours
-            recent_rewards = [
-                (r, t, qtype)
-                for r, t, qtype in self.rewards_log[uid]
-                if current_time - t <= 86400
+            recent_tasks = self.tasks_history[uid]
+            # remove old records
+            recent_tasks = [
+                (is_answer_correct, task_time, question_type)
+                for is_answer_correct, task_time, question_type in recent_tasks
+                if current_time - task_time < 86400
             ]
-
             # Separate regular questions and captchas
-            correct_answers = sum(1 for r, t, qtype in recent_rewards if r > 0.0)
+            correct_answers = sum(
+                1
+                for is_answer_correct, task_time, question_type in recent_tasks
+                if is_answer_correct == True
+            )
             correct_capthas = sum(
-                1 for r, t, qtype in recent_rewards if r > 0.0 and qtype == "captcha"
+                1
+                for is_answer_correct, task_time, question_type in recent_tasks
+                if is_answer_correct == True and question_type == "captcha"
             )
 
             captcha_penalties = sum(
-                1 for r, t, qtype in recent_rewards if qtype == "captcha" and r == 0.0
+                1
+                for is_answer_correct, task_time, question_type in recent_tasks
+                if question_type == "captcha" and is_answer_correct == False
             )
             wrong_answers = sum(
-                1 for r, t, qtype in recent_rewards if r == 0.0 and qtype != "captcha"
+                1
+                for is_answer_correct, task_time, question_type in recent_tasks
+                if is_answer_correct == False and question_type != "captcha"
             )
             score = linear_rewards(self, correct_answers)
 
@@ -372,24 +397,23 @@ class BaseValidatorNeuron(BaseNeuron):
                 # as 5% of the total number of failed captchas
                 for i in range(captcha_penalties):
                     score = score * 0.95
-            if score > 0.0:
-                bt.logging.info(
-                    f"Updating score for miner {uid} with score {score} and correct answers {correct_answers} and penalize_score {penalize_score}"
-                )
+
+            bt.logging.debug(
+                f"self.score: Updating score for miner {uid} with score {score}"
+            )
             # Update the scores tensor
             self.scores[uid] = torch.FloatTensor([score])
 
         # Remove old records to free up memory
-        for uid in list(self.rewards_log.keys()):
-            self.rewards_log[uid] = [
-                (r, t, qtype)
-                for r, t, qtype in self.rewards_log[uid]
-                if current_time - t <= 86400
-            ]
+        for i in range(len(self.tasks_history)):
+            for t in self.tasks_history[i]:
+                if current_time - t[1] > 86400:
+                    self.tasks_history[i].remove(t)
 
     def save_state(self):
         """Saves the state of the validator to a file."""
         bt.logging.info("Saving validator state.")
+        bt.logging.debug(f"self.score: Saved step {self.step} in state.")
 
         # Save the state of the validator to file.
         torch.save(
@@ -397,7 +421,7 @@ class BaseValidatorNeuron(BaseNeuron):
                 "step": self.step,
                 "scores": self.scores,
                 "hotkeys": self.hotkeys,
-                "rewards_log": self.rewards_log,
+                "tasks_history": self.tasks_history,
             },
             self.config.neuron.full_path + "/state.pt",
         )
@@ -409,6 +433,7 @@ class BaseValidatorNeuron(BaseNeuron):
         # Load the state of the validator from file.
         state = torch.load(self.config.neuron.full_path + "/state.pt")
         self.step = state["step"]
+        bt.logging.debug(f"self.score: Loaded step {self.step} from state.")
         self.scores = state["scores"]
         self.hotkeys = state["hotkeys"]
-        self.rewards_log = state["rewards_log"]
+        self.tasks_history = state["tasks_history"]
