@@ -336,7 +336,12 @@ class BaseValidatorNeuron(BaseNeuron):
     ):
         current_time = int(time.time())
         bt.logging.info(f"Updating scores called with rewards")
-
+        bt.logging.debug(f"uids: {uids}")
+        bt.logging.debug(f"is_correct_answers: {is_correct_answers}")
+        bt.logging.debug(f"question_type: {question_type}")
+        bt.logging.debug(f"current_time: {current_time}")
+        bt.logging.debug(self.tasks_history)
+        bt.logging.debug(self.scores)
         for uid, is_answer_correct in zip(uids, is_correct_answers):
             if uid not in self.tasks_history:
                 self.tasks_history[uid] = []
