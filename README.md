@@ -12,10 +12,12 @@ The HIP (Human Intelligence Primitive) Subnet is a [Bittensor](https://github.co
 
 ## Getting Started
 
-To participate in the HIP Subnet as a miner or validator, follow the instructions in the respective guides:
+To participate in the HIP Subnet as a miner or validator and get set-up quickly, Please follow the instructions in the respective guides bellow:
 
-- [Mining Guide](docs/mining-guide.md)
-- [Validator Guide](docs/validator-guide.md)
+- [Mining Guide](https://github.com/HIP-Labs/HIP-Developer-Docs/blob/main/Guides/Miner/Setting_up_on_DigitalOcean.md)
+- [Validator Guide](https://github.com/HIP-Labs/HIP-Developer-Docs/blob/main/Guides/Validator/Setting_up_on_RunPod.md)
+
+It is not mandatory to use either service provided in these guides. They are provided to help you get started.
 
 Please note that Bittensor is currently supported on macOS and Linux, with limited support for Windows.
 
@@ -23,18 +25,7 @@ Please note that Bittensor is currently supported on macOS and Linux, with limit
 
 The current reward model works as follows:
 
-1. The validator generates a task, which can be either an image-based task or a text-based task (LLM task).
-2. The task is sent to the miners along with a captcha.
-3. Miners provide their answers to the task and the captcha.
-4. The validator collects the responses from the miners.
-5. The validator calculates the rewards for each miner based on the following criteria:
-   - If the miner's captcha answer matches the true captcha, their response is considered valid.
-   - If the miner's response is valid and their task answer matches the correct answer (determined by either the LLM-generated answer or the most common answer among the miners), they receive the highest reward.
-   - If the miner's response is valid but their task answer is incorrect, they receive a small reward.
-   - If the miner's captcha answer is incorrect, their response is considered invalid, and they do not receive a reward regardless of their task answer.
-6. The validator updates the scores of the miners based on the calculated rewards.
----
-When a miner submits a valid response (correct captcha and task answer), they receive the highest reward. If their response is valid but the task answer is incorrect, they receive a lower reward.
+When a miner submits a valid response (correct captcha or task answer), they receive the highest reward. If their response is valid but the task answer is incorrect, they receive a lower reward.
 
 Miners who consistently provide correct answers will accumulate higher total rewards over time compared to miners who don't respond or provide incorrect answers.
 
@@ -111,18 +102,24 @@ To ensure that the miner and server run continuously, we will use `pm2`.
     ```bash
     pm2 start ./scripts/run_miner_frontend.sh --name miner_server
     ```
+   > 3.1 <em>(Alternative to PM2)</em> <br>
+   >**Run the miner server with `systemcl`:**
+   >```bash
+   >chmod +x /scripts/setup_uvicorn_service.sh
+   >./scripts/setup_uvicorn_service.sh
+   >```
 
-4. **Run the miner script with `pm2`:**
+5. **Run the miner script with `pm2`:**
     ```bash
-    pm2 start python3 --name miner -- neurons/miner.py --wallet.name <YOUR_WALLET_COLDKEY> --wallet.hotkey <YOUR_WALLET_HOTKEY> --netuid 36 --subtensor.network finney --logging.debug --logging.trace
+    pm2 start --interpreter python3 --name miner -- neurons/miner.py --wallet.name <YOUR_WALLET_COLDKEY> --wallet.hotkey <YOUR_WALLET_HOTKEY> --netuid 36 --subtensor.network finney --logging.debug --logging.trace
     ```
 
-5. **Save the `pm2` process list and corresponding environments:**
+6. **Save the `pm2` process list and corresponding environments:**
     ```bash
     pm2 save
     ```
 
-6. **Set `pm2` to start on boot:**
+7. **Set `pm2` to start on boot:**
     ```bash
     pm2 startup
     ```
@@ -289,7 +286,7 @@ We have made a short guide on how to set up your validator using runpod here: [S
 
 2. **Run the validator script with `pm2`:**
     ```bash
-    pm2 start python3 --name validator -- neurons/validator.py --wallet.name <YOUR_WALLET_COLDKEY> --wallet.hotkey <YOUR_WALLET_HOTKEY> --netuid 36 --subtensor.network finney --logging.debug --logging.trace
+    pm2 start --interpreter python3 --name validator -- neurons/validator.py --wallet.name <YOUR_WALLET_COLDKEY> --wallet.hotkey <YOUR_WALLET_HOTKEY> --netuid 36 --subtensor.network finney --logging.debug --logging.trace
     ```
 
 3. **Save the `pm2` process list and corresponding environments:**
