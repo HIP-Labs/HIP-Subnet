@@ -384,12 +384,12 @@ class BaseValidatorNeuron(BaseNeuron):
             score = linear_rewards(self, correct_answers)
 
             penalize_score = True
-            # Realistically, a real human being can't answer for more than 8 hours a day
-            # so we do not penalize the score if the miner has answered more than 8 hours a day
+            # Realistically, a real human being can't answer for more than 4 hours in a day
+            # so we do not penalize the score if the miner has answered more than 4 hours in a day
             # We know that probability of a captcha occuring is 10% in whole day we will get
             # 10% of 480 = 48 captchas in a day
-            # in 8 hours we will get 48/3 = 16 captchas
-            if correct_capthas > 16:
+            # in 4 hours we will get 8 captchas ((4 * 60) / 3)* 0.1 = 8
+            if correct_capthas > 8:
                 penalize_score = False
 
             if penalize_score:
