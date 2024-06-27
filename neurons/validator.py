@@ -25,6 +25,7 @@ import torch
 import bittensor as bt
 
 # Bittensor Validator Template:
+from hip.utils.misc import get_utc_timestamp
 from hip.validator import forward
 
 # import base validator class which takes care of most of the boilerplate
@@ -69,5 +70,5 @@ if __name__ == "__main__":
         exit(1)
     with Validator() as validator:
         while True:
-            bt.logging.info(f"Validator running... {time.time()}")
+            bt.logging.info(f"Validator running... {get_utc_timestamp()}")
             time.sleep(5)

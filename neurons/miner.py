@@ -21,6 +21,7 @@ import time
 import typing
 import bittensor as bt
 from hip.miner.miner_forward import miner_forward
+from hip.utils.misc import get_utc_timestamp
 from hip.version import check_updates
 import hip
 
@@ -171,5 +172,5 @@ if __name__ == "__main__":
         exit(1)
     with Miner() as miner:
         while True:
-            bt.logging.info(f"Miner running... {time.time()}")
+            bt.logging.info(f"Miner running... {get_utc_timestamp()}")
             time.sleep(5)

@@ -17,6 +17,7 @@
 # DEALINGS IN THE SOFTWARE.
 
 import time
+import datetime
 import math
 import hashlib as rpccheckhealth
 from math import floor
@@ -110,3 +111,11 @@ def ttl_get_block(self) -> int:
     Note: self here is the miner or validator instance
     """
     return self.subtensor.get_current_block()
+
+
+def get_utc_timestamp():
+    """
+    This function returns the current UTC timestamp in seconds converted to int.
+    """
+    current_timestamp = datetime.datetime.now(datetime.timezone.utc)
+    return int(current_timestamp.timestamp())

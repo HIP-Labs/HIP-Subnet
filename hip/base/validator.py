@@ -24,13 +24,13 @@ import asyncio
 import argparse
 import threading
 import bittensor as bt
-import time
 from typing import List, Literal
 from traceback import print_exception
 
 from hip.base.neuron import BaseNeuron
 from hip.mock import MockDendrite
 from hip.utils.config import add_validator_args
+from hip.utils.misc import get_utc_timestamp
 from hip.validator.reward import linear_rewards
 
 
@@ -334,7 +334,7 @@ class BaseValidatorNeuron(BaseNeuron):
         uids: List[int],
         question_type: Literal["captcha", "normal"],
     ):
-        current_time = int(time.time())
+        current_time = get_utc_timestamp()
         bt.logging.info(f"Updating scores called with rewards")
         bt.logging.debug(f"uids: {uids}")
         bt.logging.debug(f"is_correct_answers: {is_correct_answers}")

@@ -2,6 +2,7 @@ import bittensor as bt
 import time
 from hip.protocol import TaskSynapse
 from hip.miner.db import Task, Option, SessionLocal
+from hip.utils.misc import get_utc_timestamp
 
 # Create a new database session
 db = SessionLocal()
@@ -50,16 +51,16 @@ async def miner_forward(self, synapse: TaskSynapse) -> TaskSynapse:
         options=synapse.options,
         value=synapse.value,
         image=synapse.image,
-        expiry=int(time.time()) + 180,
+        expiry=get_utc_timestamp() + 180,
     )
     bt.logging.debug(f"Task: {synapse.id} inserted into the database")
 
     answered = False
 
-    start_time = int(time.time())
+    start_time = get_utc_timestamp()
     timeout = 180  # Default timeout is 180 seconds
     bt.logging.debug(f"Waiting for the task: {synapse.id} to be answered")
-    while int(time.time()) - start_time < timeout:
+    while get_utc_timestamp() - start_time < timeout:
         db.refresh(db_task)  # Refresh the task instance to get the latest state
         answered = str(db_task.answer) != ""
         if answered:

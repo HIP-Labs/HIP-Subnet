@@ -23,6 +23,7 @@ from typing import Tuple
 from tabulate import tabulate
 
 from hip.protocol import TaskSynapse
+from hip.utils.misc import get_utc_timestamp
 from hip.validator.generators.image_generator import generate_image_task
 from hip.validator.reward import get_rewards
 from hip.utils.uids import get_random_uids
@@ -79,12 +80,12 @@ async def forward(self):
     # Store the last run time
     if not hasattr(self, "_last_run_time"):
         firstTime = True
-        self._last_run_time = time.time()
+        self._last_run_time = get_utc_timestamp()
 
     # Check if task_gen_step seconds have passed
-    if time.time() - self._last_run_time < task_gen_step and not firstTime:
+    if get_utc_timestamp() - self._last_run_time < task_gen_step and not firstTime:
         return
-    self._last_run_time = time.time()
+    self._last_run_time = get_utc_timestamp()
 
     bt.logging.debug("Forwarding task to miners")
     miner_uids = get_random_uids(self, k=self.config.neuron.sample_size)
@@ -96,7 +97,9 @@ async def forward(self):
         task, task_type = generate_task()
     except Exception as e:
         bt.logging.error(f"Error generating image_task: {e} \n Retrying...")
-        self._last_run_time = time.time() - (task_gen_step + 1)  # Retry immediately
+        self._last_run_time = get_utc_timestamp() - (
+            task_gen_step + 1
+        )  # Retry immediately
         return
 
     ground_truth = task.answer
