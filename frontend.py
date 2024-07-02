@@ -1,4 +1,3 @@
-import time
 from typing import List
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
@@ -6,6 +5,7 @@ from fastapi.responses import RedirectResponse, JSONResponse
 from sqlalchemy.exc import NoResultFound
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
+from hip.utils.misc import get_utc_timestamp
 
 from hip.miner.db import Option, Task, get_db
 
@@ -34,7 +34,7 @@ class TaskDTO(BaseModel):
 
 @app.get("/api/tasks", response_model=List[TaskDTO])
 async def get_tasks(db: Session = Depends(get_db)):
-    current_time = int(time.time())
+    current_time = get_utc_timestamp()
     # Remove expired tasks with grace period of 5 seconds
     expired_tasks = db.query(Task).filter(Task.expiry < current_time - 5).all()
     for task in expired_tasks:
@@ -88,7 +88,7 @@ async def get_task(task_id: int, db: Session = Depends(get_db)):
 @app.post("/api/answer")
 async def post_answer(answer: Answer, db: Session = Depends(get_db)):
     # remove all expired tasks
-    db.query(Task).filter(Task.expiry < int(time.time())).delete()
+    db.query(Task).filter(Task.expiry < get_utc_timestamp()).delete()
     db.commit()
 
     task = db.query(Task).filter(Task.id == answer.id).first()

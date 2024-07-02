@@ -90,8 +90,15 @@ def get_rewards(
     correct_answer = ground_truth
     is_answer_correct = []
     for response in responses:
-        if response.answer == correct_answer:
-            is_answer_correct.append(True)
+        """
+        If the response is captcha, check if the response matches the ground truth based on the captcha_match function.
+        otherwise, check if the response exactly matches the correct answer.
+        """
+        if response.type == "text" and response.image:
+            is_answer_correct.append(captcha_match(correct_answer, response.answer))
         else:
-            is_answer_correct.append(False)
+            if response.answer == correct_answer:
+                is_answer_correct.append(True)
+            else:
+                is_answer_correct.append(False)
     return is_answer_correct

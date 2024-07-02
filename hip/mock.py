@@ -1,4 +1,4 @@
-import time
+from hip.utils.misc import get_utc_timestamp
 
 import asyncio
 import random
@@ -77,14 +77,14 @@ class MockDendrite(bt.dendrite):
             async def single_axon_response(i, axon):
                 """Queries a single axon for a response."""
 
-                start_time = time.time()
+                start_time = get_utc_timestamp()
                 s = synapse.copy()
                 # Attach some more required data so it looks real
                 s = self.preprocess_synapse_for_request(axon, s, timeout)
                 # We just want to mock the response, so we'll just fill in some data
                 process_time = random.random() * (timeout + 6)
                 if process_time < timeout:
-                    s.dendrite.process_time = str(time.time() - start_time)  # type: ignore
+                    s.dendrite.process_time = str(get_utc_timestamp() - start_time)  # type: ignore
                     # Update the status code and status message of the dendrite to match the axon
                     s.answer = random.choice(["42", "43", "44"])
                     s.dendrite.status_code = 200  # type: ignore

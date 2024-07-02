@@ -24,13 +24,13 @@ import asyncio
 import argparse
 import threading
 import bittensor as bt
-import time
 from typing import List, Literal
 from traceback import print_exception
 
 from hip.base.neuron import BaseNeuron
 from hip.mock import MockDendrite
 from hip.utils.config import add_validator_args
+from hip.utils.misc import get_utc_timestamp
 from hip.validator.reward import linear_rewards
 
 
@@ -334,7 +334,7 @@ class BaseValidatorNeuron(BaseNeuron):
         uids: List[int],
         question_type: Literal["captcha", "normal"],
     ):
-        current_time = int(time.time())
+        current_time = get_utc_timestamp()
         bt.logging.info(f"Updating scores called with rewards")
         bt.logging.debug(f"uids: {uids}")
         bt.logging.debug(f"is_correct_answers: {is_correct_answers}")
@@ -384,12 +384,12 @@ class BaseValidatorNeuron(BaseNeuron):
             score = linear_rewards(self, correct_answers)
 
             penalize_score = True
-            # Realistically, a real human being can't answer for more than 8 hours a day
-            # so we do not penalize the score if the miner has answered more than 8 hours a day
+            # Realistically, a real human being can't answer for more than 4 hours in a day
+            # so we do not penalize the score if the miner has answered more than 4 hours in a day
             # We know that probability of a captcha occuring is 10% in whole day we will get
             # 10% of 480 = 48 captchas in a day
-            # in 8 hours we will get 48/3 = 16 captchas
-            if correct_capthas > 16:
+            # in 4 hours we will get 8 captchas ((4 * 60) / 3)* 0.1 = 8
+            if correct_capthas > 8:
                 penalize_score = False
 
             if penalize_score:
