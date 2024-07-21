@@ -94,10 +94,14 @@ def get_rewards(
         If the response is captcha, check if the response matches the ground truth based on the captcha_match function.
         otherwise, check if the response exactly matches the correct answer.
         """
-        if response.type == "text" and response.image:
+        if (
+            response.type == "text"
+            and response.image
+            and response.label == "Enter the text from the image"
+        ):
             is_answer_correct.append(captcha_match(correct_answer, response.answer))
         else:
-            if response.answer == correct_answer:
+            if str(response.answer) == str(correct_answer):
                 is_answer_correct.append(True)
             else:
                 is_answer_correct.append(False)

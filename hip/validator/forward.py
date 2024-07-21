@@ -25,6 +25,7 @@ from tabulate import tabulate
 from hip.protocol import TaskSynapse
 from hip.utils.misc import get_utc_timestamp
 from hip.validator.generators.image_generator import generate_image_task
+from hip.validator.generators.math_generator import generate_math_task
 from hip.validator.reward import get_rewards
 from hip.utils.uids import get_random_uids
 from hip.validator.generators.llm_generator import generate_llm_task
@@ -40,15 +41,17 @@ def generate_task() -> Tuple[TaskSynapse, str]:
         TaskSynapse: A randomly generated task.
     """
     task_type = random.choices(
-        ["image", "llm", "captcha"], weights=[0.4, 0.5, 0.1], k=1
+        ["image", "llm", "captcha", "math"], weights=[0.3, 0.3, 0.1, 0.3], k=1
     )[0]
     task = None
     if task_type == "image":
         task = generate_image_task()
     elif task_type == "llm":
         task = generate_llm_task()
-    else:  # task_type == "captcha"
+    elif task_type == "captcha":
         task = generate_captcha_task()
+    else:
+        task = generate_math_task()
 
     # Log the generated task for monitoring purposes.
     bt.logging.debug(f"Task: {task.id} - Generated task type: {task_type}")
