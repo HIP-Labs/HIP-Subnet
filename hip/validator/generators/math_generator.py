@@ -16,8 +16,8 @@ def generate_math_task() -> TaskSynapse:
     draw = ImageDraw.Draw(image)
 
     # Generate a basic math task (e.g., addition, subtraction)
-    num1 = random.randint(1, 10)
-    num2 = random.randint(1, 10)
+    num1 = random.randint(0, 9)
+    num2 = random.randint(0, 9)
     operation = random.choice(["+", "-", "*"])
 
     result = 0
@@ -62,5 +62,4 @@ def generate_math_task() -> TaskSynapse:
 
 if __name__ == "__main__":
     task = generate_math_task()
-    print(task.image)
-    print(task.answer)
+    print(task.to_dict())
