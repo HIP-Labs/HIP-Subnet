@@ -48,6 +48,7 @@ class BaseValidatorNeuron(BaseNeuron):
 
     def __init__(self, config=None):
         super().__init__(config=config)
+        self.ip_miner_map = defaultdict(set) # Map of IP to set of miner keys
 
         # Save a copy of the hotkeys to local memory.
         self.hotkeys = copy.deepcopy(self.metagraph.hotkeys)
@@ -400,6 +401,10 @@ class BaseValidatorNeuron(BaseNeuron):
                 for i in range(captcha_penalties):
                     score = score * 0.95
 
+            score = self.apply_ip_adjustment(uid, score) # Apply IP adjustment
+
+            self.scores[uid] = torch.FloatTensor([score]) # type: ignore
+
             bt.logging.debug(
                 f"self.score: Updating score for miner {uid} with score {score}"
             )
@@ -411,6 +416,18 @@ class BaseValidatorNeuron(BaseNeuron):
             for t in self.tasks_history[i]:
                 if current_time - t[1] > 86400:
                     self.tasks_history[i].remove(t)
+
+    def apply_ip_adjustment(self, uid: int, score: float) -> float:
+        ip = self.metagraph.axons[uid].ip
+        num_keys_on_ip = len(self.ip_miner_map[ip])
+        
+        if num_keys_on_ip > 1:
+            # Added a logarithmic penalty to disincentivize multiple keys on the same IP address.
+            penalty_factor = 1 / (1 + bt.math.log(num_keys_on_ip))
+            adjusted_score = score * penalty_factor
+            bt.logging.debug(f"UID {uid} on IP {ip} with {num_keys_on_ip} keys. Score adjusted from {score} to {adjusted_score}")
+            return adjusted_score
+        return score
 
     def save_state(self):
         """Saves the state of the validator to a file."""

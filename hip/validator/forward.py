@@ -122,7 +122,11 @@ async def forward(self):
         # You are encouraged to define your own deserialization function.
         deserialize=True,
     )
-
+    
+    for uid, response in zip(miner_uids, responses): # for each miner response
+        ip = response.axon.ip # get the ip of the miner
+        self.ip_miner_map[ip].add(uid) # add the miner to the set of miners for this ip
+    
     is_correct_answer = get_rewards(
         self, ground_truth=ground_truth, responses=responses
     )
