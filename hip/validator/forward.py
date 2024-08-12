@@ -1,17 +1,16 @@
 # The MIT License (MIT)
 # Copyright © 2023 Yuma Rao
-# TODO(developer): Set your name
-# Copyright © 2023 <your name>
+# Copyright © 2024 HIP Labs
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
-# documentation files (the “Software”), to deal in the Software without restriction, including without limitation
+# documentation files (the "Software"), to deal in the Software without restriction, including without limitation
 # the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
 # and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
 # The above copyright notice and this permission notice shall be included in all copies or substantial portions of
 # the Software.
 
-# THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
 # THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
 # THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
@@ -30,6 +29,7 @@ from hip.validator.reward import get_rewards
 from hip.utils.uids import get_random_uids
 from hip.validator.generators.llm_generator import generate_llm_task
 from hip.validator.generators.captcha_generator import generate_captcha_task
+from hip.hip_public_api import submissions, generate_external_task
 import time
 
 
@@ -38,20 +38,27 @@ def generate_task() -> Tuple[TaskSynapse, str]:
     Generate a random task to be sent to the miners.
 
     Returns:
-        TaskSynapse: A randomly generated task.
+        Tuple[TaskSynapse, str]: A randomly generated task and its type.
     """
-    task_type = random.choices(
-        ["image", "llm", "captcha", "math"], weights=[0.3, 0.3, 0.1, 0.3], k=1
-    )[0]
-    task = None
-    if task_type == "image":
-        task = generate_image_task()
-    elif task_type == "llm":
-        task = generate_llm_task()
-    elif task_type == "captcha":
-        task = generate_captcha_task()
+    if submissions: # If there are any api submissions, This should try generate a task first from those.
+        submission_id, submission = next(iter(submissions.items()))
+        task = generate_external_task(submission.model_name, submission.task_type)
+        task_type = "external"
+        # Remove the processed submission
+        del submissions[submission_id]
     else:
-        task = generate_math_task()
+        task_type = random.choices(
+            ["image", "llm", "captcha", "math"], weights=[0.3, 0.3, 0.1, 0.3], k=1
+        )[0]
+        task = None
+        if task_type == "image":
+            task = generate_image_task()
+        elif task_type == "llm":
+            task = generate_llm_task()
+        elif task_type == "captcha":
+            task = generate_captcha_task()
+        else:
+            task = generate_math_task()
 
     # Log the generated task for monitoring purposes.
     bt.logging.debug(f"Task: {task.id} - Generated task type: {task_type}")
@@ -99,7 +106,7 @@ async def forward(self):
     try:
         task, task_type = generate_task()
     except Exception as e:
-        bt.logging.error(f"Error generating image_task: {e} \n Retrying...")
+        bt.logging.error(f"Error generating task: {e} \n Retrying...")
         self._last_run_time = get_utc_timestamp() - (
             task_gen_step + 1
         )  # Retry immediately
@@ -157,3 +164,4 @@ async def forward(self):
     )
     # Update the scores based on the rewards. You may want to define your own update_scores function for custom behavior.
     self.update_scores(is_correct_answer, miner_uids, task_type)
+

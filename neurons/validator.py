@@ -33,6 +33,11 @@ from hip.base.validator import BaseValidatorNeuron
 from hip.validator.reward import linear_rewards
 from hip.version import check_updates
 
+# The public API imports
+import asyncio
+from hip.hip_public_api import app as hip_public_api
+import uvicorn
+
 
 class Validator(BaseValidatorNeuron):
     """
@@ -45,6 +50,7 @@ class Validator(BaseValidatorNeuron):
 
     def __init__(self, config=None):
         super(Validator, self).__init__(config=config)
+        self.public_api_task = None
 
         bt.logging.info("load_state()")
         self.load_state()
@@ -59,7 +65,22 @@ class Validator(BaseValidatorNeuron):
         - Updating the scores
         """
         return await forward(self)
+    
+    def start_public_api(self): # Start the api for external sources to submit tasks to. Probably need more security measures. I dunno, it's a start.
+        config = uvicorn.Config(hip_public_api, host="0.0.0.0", port=69420, log_level="info")
+        server = uvicorn.Server(config)
+        self.public_api_task = asyncio.create_task(server.serve())
 
+    async def run_with_api(self):
+        self.start_public_api()
+        try:
+            while True:
+                await self.forward()
+                await asyncio.sleep(self.config.neuron.task_gen_step)
+        finally:
+            if self.public_api_task:
+                self.public_api_task.cancel()
+                await self.public_api_task
 
 # The main function parses the configuration and runs the validator.
 if __name__ == "__main__":
@@ -70,5 +91,8 @@ if __name__ == "__main__":
         exit(1)
     with Validator() as validator:
         while True:
+            asyncio.run(validator.run_with_api()) # Run the validator with the api, comment this out if you don't wanna use it.
             bt.logging.info(f"Validator running... {get_utc_timestamp()}")
             time.sleep(5)
+
+
